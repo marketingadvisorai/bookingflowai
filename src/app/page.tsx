@@ -15,6 +15,7 @@ import {
 } from '@hugeicons/core-free-icons';
 import { MarketingNav } from '@/app/_components/marketing-nav';
 import { MarketingFooter } from '@/app/_components/marketing-footer';
+import { HeroHeadlines } from '@/app/_components/HeroHeadlines';
 
 export default function Home() {
   return (
@@ -55,35 +56,7 @@ function Hero() {
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 items-center">
           {/* Left — Text content */}
-          <div className="max-w-3xl">
-            <div className="flex items-center gap-2.5 mb-5 sm:mb-7">
-              <span className="inline-block h-2 w-2 rounded-full bg-[#FF4F00]" />
-              <span className="text-xs uppercase tracking-[0.15em] text-[#FF4F00] font-bold">
-                The venue booking platform
-              </span>
-            </div>
-            <h1 className="font-display text-[32px] sm:text-[44px] md:text-[56px] lg:text-[72px] font-medium leading-[0.92] tracking-[-0.03em] text-[#201515]">
-              Fill every time slot without lifting a finger
-            </h1>
-            <p className="mt-6 sm:mt-8 text-[17px] sm:text-[18px] md:text-[19px] leading-[1.7] text-[#574E4C] max-w-[560px]">
-              BookingFlow handles your online bookings, phone calls, customer chat, and email follow-ups. Your customers book in under a minute. You get paid upfront.
-            </p>
-            <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4">
-              <Link
-                href="/signup"
-                className="w-full sm:w-auto inline-flex items-center justify-center bg-[#FF4F00] text-[#FFFDFB] text-[16px] sm:text-[17px] font-semibold px-8 py-4 min-h-[44px] rounded-full hover:bg-[#E64700] hover:shadow-primary hover:scale-[1.02] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#FF4F00] focus:ring-offset-2 animate-pulse-glow"
-              >
-                Start Free <HugeiconsIcon icon={ArrowRight01Icon} className="ml-2 h-5 w-5" strokeWidth={1.8} />
-              </Link>
-              <Link
-                href="/features"
-                className="w-full sm:w-auto inline-flex items-center justify-center bg-transparent text-[#201515] text-[16px] sm:text-[17px] font-semibold px-8 py-4 min-h-[44px] rounded-full border-2 border-[#E7E5E4] hover:border-[#201515] hover:bg-[#F9F7F3] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#201515] focus:ring-offset-2"
-              >
-                See How It Works
-              </Link>
-            </div>
-            <p className="mt-5 sm:mt-6 text-[14px] font-medium text-[#93908C]">Free to start. No credit card required.</p>
-          </div>
+          <HeroHeadlines />
 
           {/* Right — Hero Illustration with animations */}
           <div className="relative lg:-mr-8 xl:-mr-16">
