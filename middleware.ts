@@ -22,8 +22,13 @@ export function middleware(req: NextRequest) {
   const authRoutes = pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname.startsWith('/dashboard') || pathname.startsWith('/onboarding') || pathname.startsWith('/forgot-password') || pathname.startsWith('/reset-password') || pathname.startsWith('/api/dashboard');
   
   if (isMarketingDomain && authRoutes) {
-    const target = `https://dash.bookingflowai.com${pathname}${req.nextUrl.search}`;
-    return NextResponse.redirect(target);
+    return NextResponse.redirect(`https://dash.bookingflowai.com${pathname}${req.nextUrl.search}`);
+  }
+
+  /* ── Dashboard domain: redirect marketing pages to bookingflowai.com ── */
+  const isDashDomain = effectiveHost === 'dash.bookingflowai.com';
+  if (isDashDomain && !authRoutes && !pathname.startsWith('/api') && !pathname.startsWith('/widget') && !pathname.startsWith('/book') && !pathname.startsWith('/embed') && !pathname.startsWith('/standalone') && !pathname.startsWith('/gift-cards')) {
+    return NextResponse.redirect(`https://bookingflowai.com${pathname}${req.nextUrl.search}`);
   }
   
   /* ── Domain-based routing: escapeboost.com → /escapeboost/* ── */
