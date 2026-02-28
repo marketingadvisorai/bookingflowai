@@ -96,7 +96,7 @@ export function HeroHeadlines() {
 
       {/* Main headline — typewriter effect */}
       <h1
-        className={`font-display text-[32px] sm:text-[44px] md:text-[56px] lg:text-[72px] font-medium leading-[0.92] tracking-[-0.03em] text-[#201515] ${
+        className={`font-display text-[36px] sm:text-[48px] md:text-[60px] lg:text-[72px] font-bold leading-[1.05] tracking-[-0.02em] text-[#201515] ${
           isAnimating ? styles.typewriterActive : styles.typewriterInactive
         }`}
         style={
