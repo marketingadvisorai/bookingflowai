@@ -130,7 +130,7 @@ export function IdleHelper({ idleSeconds, stage, onOpenChat }: IdleHelperProps) 
     if (!msg) return;
     const timer = setTimeout(() => setDismissed(true), 8000);
     return () => clearTimeout(timer);
-  }, [stage, idleSeconds, msg]);
+  }, [stage, idleSeconds, !!msg]);
 
   if (dismissed || !msg) return null;
 
