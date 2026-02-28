@@ -5,10 +5,13 @@ import { useSearchParams } from 'next/navigation';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Sun01Icon, MoonIcon } from '@hugeicons/core-free-icons';
 
-import { BookingWidgetDemo } from '@/app/(embed)/widget/_components/booking-widget-demo';
+import { LayoutSwitcher } from '@/app/(embed)/widget/_components/layouts';
 import { useThemeToggle } from './useThemeToggle';
 import { GameCard, type CatalogGame } from './GameCard';
 import { LoadingSkeleton, ErrorDisplay, EmptyState, MissingOrgError } from './BookNowStates';
+
+type LayoutType = 'original' | 'wizard' | 'classic';
+const VALID_LAYOUTS = new Set<LayoutType>(['original', 'wizard', 'classic']);
 
 type CatalogResp = {
   ok: boolean;
@@ -21,10 +24,16 @@ export function BookNowClient() {
   const sp = useSearchParams();
   const orgId = sp.get('orgId');
   if (!orgId) return <MissingOrgError />;
-  return <BookNowInner orgId={orgId} themeParam={sp.get('theme')} />;
+
+  const layoutRaw = sp.get('layout') ?? 'original';
+  const layout: LayoutType = VALID_LAYOUTS.has(layoutRaw as LayoutType)
+    ? (layoutRaw as LayoutType)
+    : 'original';
+
+  return <BookNowInner orgId={orgId} themeParam={sp.get('theme')} layout={layout} />;
 }
 
-function BookNowInner({ orgId, themeParam }: { orgId: string; themeParam: string | null }) {
+function BookNowInner({ orgId, themeParam, layout }: { orgId: string; themeParam: string | null; layout: LayoutType }) {
   const { theme, toggleTheme } = useThemeToggle(themeParam);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,11 +43,8 @@ function BookNowInner({ orgId, themeParam }: { orgId: string; themeParam: string
 
   useEffect(() => {
     if (!activeGameId) return;
-    // Hide background scroll without position:fixed (which breaks modal scrolling)
     document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = '';
-    };
+    return () => { document.body.style.overflow = ''; };
   }, [activeGameId]);
 
   useEffect(() => {
@@ -81,7 +87,7 @@ function BookNowInner({ orgId, themeParam }: { orgId: string; themeParam: string
               <div className="text-sm font-medium">Choose a time</div>
               <button type="button" onClick={() => setActiveGameId(null)} className="rounded-full bg-white/10 px-4 py-2 text-sm">Close</button>
             </div>
-            <BookingWidgetDemo orgId={orgId} gameId={activeGameId} theme={theme} />
+            <LayoutSwitcher layout={layout} orgId={orgId} gameId={activeGameId} theme={theme} />
           </div>
         </div>
       )}
