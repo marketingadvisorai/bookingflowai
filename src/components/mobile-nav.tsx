@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Menu01Icon, Cancel01Icon } from '@hugeicons/core-free-icons';
+import { Menu01Icon, Cancel01Icon, ArrowDown01Icon } from '@hugeicons/core-free-icons';
 import { Button } from '@/components/ui/button';
 
 type NavItem = {
@@ -21,11 +21,17 @@ type Props = {
 
 export function MobileNav({ items }: Props) {
   const [isOpen, setIsOpen] = useState(false);
+  const [agentsOpen, setAgentsOpen] = useState(false);
   const pathname = usePathname();
+
+  // Split items into main nav and agent items
+  const separatorIdx = items.findIndex((item) => item.separator === 'Agents');
+  const mainItems = separatorIdx >= 0 ? items.slice(0, separatorIdx) : items;
+  const agentItems = separatorIdx >= 0 ? items.slice(separatorIdx + 1) : [];
 
   return (
     <>
-      {/* Hamburger button - visible on mobile only */}
+      {/* Hamburger button */}
       <Button
         variant="secondary"
         size="sm"
@@ -67,32 +73,7 @@ export function MobileNav({ items }: Props) {
           {/* Nav items */}
           <div className="flex-1 overflow-y-auto p-3">
             <div className="flex flex-col gap-1">
-              {items.map((item) => {
-                if (item.separator) {
-                  return (
-                    <div
-                      key={`sep-${item.separator}`}
-                      className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mt-4 mb-1 px-3"
-                    >
-                      {item.separator}
-                    </div>
-                  );
-                }
-
-                if (item.comingSoon) {
-                  return (
-                    <span
-                      key={item.href + item.label}
-                      className="flex items-center rounded-lg px-3 py-2.5 text-sm text-muted-foreground/60 cursor-default"
-                    >
-                      {item.label}
-                      <span className="text-[10px] bg-foreground/[0.06] text-muted-foreground px-1.5 py-0.5 rounded-full ml-auto">
-                        Soon
-                      </span>
-                    </span>
-                  );
-                }
-
+              {mainItems.map((item) => {
                 const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
                 return (
                   <Link
@@ -110,6 +91,41 @@ export function MobileNav({ items }: Props) {
                   </Link>
                 );
               })}
+
+              {/* Collapsible Agents section */}
+              {agentItems.length > 0 && (
+                <>
+                  <button
+                    onClick={() => setAgentsOpen(!agentsOpen)}
+                    className="flex items-center justify-between rounded-lg px-3 py-2.5 mt-3 text-[10px] uppercase tracking-wider text-muted-foreground font-medium hover:bg-foreground/[0.04] transition-colors"
+                  >
+                    <span>Agents</span>
+                    <HugeiconsIcon
+                      icon={ArrowDown01Icon}
+                      size={14}
+                      strokeWidth={1.8}
+                      className={`transition-transform duration-200 ${agentsOpen ? 'rotate-180' : ''}`}
+                    />
+                  </button>
+
+                  {agentsOpen && (
+                    <div className="flex flex-col gap-0.5 ml-1">
+                      {agentItems.map((item) => (
+                        <span
+                          key={item.href + item.label}
+                          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground/60 cursor-default"
+                        >
+                          {item.icon && <HugeiconsIcon icon={item.icon} size={16} strokeWidth={1.8} />}
+                          <span className="truncate">{item.label}</span>
+                          <span className="text-[10px] text-[#FF4F00] font-medium px-1.5 py-0.5 rounded-full ml-auto bg-[#FF4F00]/10">
+                            Soon
+                          </span>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
