@@ -213,9 +213,11 @@ function InviteFriends({ data, formattedDate, formattedTime }: { data: BookingDa
   const removeEmail = (email: string) => setEmails((prev) => prev.filter((e) => e !== email));
 
   const sendInvites = () => {
-    const msg = `You've been invited to play ${data?.gameName ?? 'an escape room'} on ${formattedDate ?? 'TBD'} at ${formattedTime ?? 'TBD'}${data?.venueName ? ` at ${data.venueName}` : ''}!`;
-    // Stub: log invites until email is configured
-    console.log('[BookingFlow] Invite emails:', emails, 'Message:', msg);
+    // Stub: invites logged in dev only until email is configured
+    if (process.env.NODE_ENV === 'development') {
+      const msg = `You've been invited to play ${data?.gameName ?? 'an escape room'} on ${formattedDate ?? 'TBD'} at ${formattedTime ?? 'TBD'}${data?.venueName ? ` at ${data.venueName}` : ''}!`;
+      console.log('[BookingFlow] Invite emails:', emails, 'Message:', msg);
+    }
     setSent(true);
   };
 

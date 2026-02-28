@@ -2,10 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { HugeiconsIcon } from '@hugeicons/react';
 
 type NavItem = {
   href: string;
   label: string;
+  icon?: any;
   comingSoon?: boolean;
   separator?: string;
 };
@@ -50,12 +52,13 @@ export function DesktopNav({ items }: Props) {
           <Link
             key={item.href}
             href={item.href}
-            className={`rounded-lg px-3 py-2 text-sm transition-colors ${
+            className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${
               isActive
                 ? 'bg-foreground/[0.08] text-foreground font-medium'
                 : 'text-muted-foreground hover:bg-foreground/[0.04] hover:text-foreground'
             }`}
           >
+            {item.icon && <HugeiconsIcon icon={item.icon} size={18} strokeWidth={1.8} />}
             {item.label}
           </Link>
         );

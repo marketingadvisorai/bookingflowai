@@ -1,6 +1,14 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { 
+  AiChat01Icon, 
+  ThumbsUpIcon, 
+  ThumbsDownIcon, 
+  Copy01Icon, 
+  Tick01Icon 
+} from '@hugeicons/core-free-icons';
 import type { DashboardMessage } from './use-dashboard-chat';
 
 interface DashboardChatMessagesProps {
@@ -28,15 +36,12 @@ export function DashboardChatMessages({
       {messages.length === 0 && (
         <div className="text-center mt-12 animate-in fade-in duration-700">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#FF4F00]/10 dark:bg-[#FF4F00]/20 mb-3">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 48 48"
-              fill="none"
-            >
-              <circle cx="24" cy="24" r="22" fill="#201515" />
-              <circle cx="24" cy="24" r="6" fill="#FF4F00" />
-            </svg>
+            <HugeiconsIcon 
+              icon={AiChat01Icon} 
+              size={24} 
+              strokeWidth={1.8} 
+              className="text-[#FF4F00]" 
+            />
           </div>
           <p className="text-gray-700 dark:text-gray-300 text-sm font-medium">
             {orgName} Assistant
@@ -195,60 +200,25 @@ function FeedbackRow({ content }: { content: string }) {
       style={{ animationDelay: '200ms' }}
     >
       <button className={iconBtn} aria-label="Good response">
-        <svg
-          width="13"
-          height="13"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-        >
-          <path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3H14z" />
-          <path d="M7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3" />
-        </svg>
+        <HugeiconsIcon 
+          icon={ThumbsUpIcon} 
+          size={13} 
+          strokeWidth={1.8} 
+        />
       </button>
       <button className={iconBtn} aria-label="Bad response">
-        <svg
-          width="13"
-          height="13"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-        >
-          <path d="M10 15V19a3 3 0 003 3l4-9V2H5.72a2 2 0 00-2 1.7l-1.38 9a2 2 0 002 2.3H10z" />
-          <path d="M17 2h3a2 2 0 012 2v7a2 2 0 01-2 2h-3" />
-        </svg>
+        <HugeiconsIcon 
+          icon={ThumbsDownIcon} 
+          size={13} 
+          strokeWidth={1.8} 
+        />
       </button>
       <button onClick={copy} className={iconBtn} aria-label="Copy">
-        {copied ? (
-          <svg
-            width="13"
-            height="13"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          >
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
-        ) : (
-          <svg
-            width="13"
-            height="13"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          >
-            <rect x="9" y="9" width="13" height="13" rx="2" />
-            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-          </svg>
-        )}
+        <HugeiconsIcon 
+          icon={copied ? Tick01Icon : Copy01Icon} 
+          size={13} 
+          strokeWidth={1.8} 
+        />
       </button>
     </div>
   );

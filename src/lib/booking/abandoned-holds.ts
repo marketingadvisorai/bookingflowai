@@ -19,6 +19,6 @@ export type AbandonedHold = {
  * Track an abandoned hold for future cart-abandonment email campaigns.
  * Currently a no-op — holds expire naturally via PostgreSQL expires_at.
  */
-export function trackAbandonedHold(data: AbandonedHold): void {
-  console.log('[abandoned-holds] tracked (no-op):', data.holdId);
+export function trackAbandonedHold(_data: AbandonedHold): void {
+  // Stubbed: holds expire naturally via PostgreSQL expires_at
 }

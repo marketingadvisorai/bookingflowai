@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 type NavItem = {
   href: string;
   label: string;
+  icon?: any;
   comingSoon?: boolean;
   separator?: string;
 };
@@ -98,12 +99,13 @@ export function MobileNav({ items }: Props) {
                     key={item.href}
                     href={item.href}
                     onClick={() => setIsOpen(false)}
-                    className={`rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                    className={`flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm transition-colors ${
                       isActive
                         ? 'bg-foreground/[0.08] text-foreground font-medium'
                         : 'text-muted-foreground hover:bg-foreground/[0.04] hover:text-foreground'
                     }`}
                   >
+                    {item.icon && <HugeiconsIcon icon={item.icon} size={18} strokeWidth={1.8} />}
                     {item.label}
                   </Link>
                 );

@@ -12,30 +12,47 @@ import { getDb } from '@/lib/db';
 import { DashboardChatWidget } from '@/components/dashboard-chat/dashboard-chat-widget';
 import { NudgeOverlay } from '@/components/nudge/nudge-overlay';
 import { DashboardThemeProvider } from './_components/dashboard-theme';
+import { 
+  Home01Icon, 
+  GameController01Icon, 
+  Door01Icon, 
+  CalendarIcon, 
+  Ticket01Icon, 
+  Clock01Icon, 
+  CodeIcon, 
+  GiftIcon, 
+  Settings01Icon,
+  Message01Icon,
+  VoiceIcon,
+  Share01Icon,
+  FavouriteIcon,
+  Mail01Icon
+} from '@hugeicons/core-free-icons';
 
 type NavItem = {
   href: string;
   label: string;
+  icon?: any;
   comingSoon?: boolean;
   separator?: string;
 };
 
 const NAV: NavItem[] = [
-  { href: '/dashboard', label: 'Overview' },
-  { href: '/dashboard/games', label: 'Games' },
-  { href: '/dashboard/rooms', label: 'Rooms' },
-  { href: '/dashboard/schedules', label: 'Schedules' },
-  { href: '/dashboard/bookings', label: 'Bookings' },
-  { href: '/dashboard/holds', label: 'Holds' },
-  { href: '/dashboard/embed', label: 'Embed' },
-  { href: '/dashboard/gift-cards', label: 'Gift Cards' },
-  { href: '/dashboard/settings', label: 'Settings' },
+  { href: '/dashboard', label: 'Overview', icon: Home01Icon },
+  { href: '/dashboard/games', label: 'Games', icon: GameController01Icon },
+  { href: '/dashboard/rooms', label: 'Rooms', icon: Door01Icon },
+  { href: '/dashboard/schedules', label: 'Schedules', icon: CalendarIcon },
+  { href: '/dashboard/bookings', label: 'Bookings', icon: Ticket01Icon },
+  { href: '/dashboard/holds', label: 'Holds', icon: Clock01Icon },
+  { href: '/dashboard/embed', label: 'Embed', icon: CodeIcon },
+  { href: '/dashboard/gift-cards', label: 'Gift Cards', icon: GiftIcon },
+  { href: '/dashboard/settings', label: 'Settings', icon: Settings01Icon },
   { href: '#', label: '', separator: 'Agents' },
-  { href: '/dashboard/agents/booking', label: 'Booking Agent', comingSoon: true },
-  { href: '/dashboard/agents/voice', label: 'Voice Agent', comingSoon: true },
-  { href: '/dashboard/agents/social', label: 'Social Manager', comingSoon: true },
-  { href: '/dashboard/agents/reviews', label: 'Review Manager', comingSoon: true },
-  { href: '/dashboard/agents/email', label: 'Email Manager', comingSoon: true },
+  { href: '/dashboard/agents/booking', label: 'Booking Agent', icon: Message01Icon, comingSoon: true },
+  { href: '/dashboard/agents/voice', label: 'Voice Agent', icon: VoiceIcon, comingSoon: true },
+  { href: '/dashboard/agents/social', label: 'Social Manager', icon: Share01Icon, comingSoon: true },
+  { href: '/dashboard/agents/reviews', label: 'Review Manager', icon: FavouriteIcon, comingSoon: true },
+  { href: '/dashboard/agents/email', label: 'Email Manager', icon: Mail01Icon, comingSoon: true },
 ];
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {

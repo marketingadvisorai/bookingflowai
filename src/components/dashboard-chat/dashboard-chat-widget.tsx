@@ -1,6 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { 
+  ExpanderIcon, 
+  MinimizeIcon, 
+  Cancel01Icon, 
+  AlertCircleIcon, 
+  Delete01Icon,
+  AiChat01Icon
+} from '@hugeicons/core-free-icons';
 import { useDashboardChat } from './use-dashboard-chat';
 import { DashboardChatMessages } from './dashboard-chat-messages';
 import { DashboardChatInput } from './dashboard-chat-input';
@@ -80,18 +89,14 @@ export function DashboardChatWidget({ orgName }: DashboardChatWidgetProps) {
         {/* Header */}
         <div className="relative flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-white/10 bg-gradient-to-r from-gray-50 to-white dark:from-[#1f1f1f] dark:to-[#1a1a1a]">
           <div className="flex items-center gap-2.5">
-            <div className="relative">
+            <div className="relative flex items-center justify-center">
               <div className="absolute inset-0 rounded-full bg-[#FF4F00] opacity-20 blur-sm"></div>
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 48 48"
-                fill="none"
-                className="relative"
-              >
-                <circle cx="24" cy="24" r="22" fill="#201515" />
-                <circle cx="24" cy="24" r="6" fill="#FF4F00" />
-              </svg>
+              <HugeiconsIcon 
+                icon={AiChat01Icon} 
+                size={20} 
+                strokeWidth={1.8} 
+                className="relative text-[#FF4F00]" 
+              />
             </div>
             <div>
               <span className="font-semibold text-sm text-gray-900 dark:text-white">
@@ -111,31 +116,11 @@ export function DashboardChatWidget({ orgName }: DashboardChatWidgetProps) {
               className="hidden sm:flex p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-white/10 text-gray-400 dark:text-gray-500 transition-all duration-200 hover:scale-110"
               aria-label="Toggle fullscreen"
             >
-              <svg
-                width="15"
-                height="15"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              >
-                {expanded ? (
-                  <>
-                    <polyline points="4 14 10 14 10 20" />
-                    <polyline points="20 10 14 10 14 4" />
-                    <line x1="14" y1="10" x2="21" y2="3" />
-                    <line x1="3" y1="21" x2="10" y2="14" />
-                  </>
-                ) : (
-                  <>
-                    <polyline points="15 3 21 3 21 9" />
-                    <polyline points="9 21 3 21 3 15" />
-                    <line x1="21" y1="3" x2="14" y2="10" />
-                    <line x1="3" y1="21" x2="10" y2="14" />
-                  </>
-                )}
-              </svg>
+              <HugeiconsIcon 
+                icon={expanded ? MinimizeIcon : ExpanderIcon} 
+                size={15} 
+                strokeWidth={1.8} 
+              />
             </button>
             <button
               onClick={() => {
@@ -145,18 +130,11 @@ export function DashboardChatWidget({ orgName }: DashboardChatWidgetProps) {
               className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-white/10 text-gray-400 dark:text-gray-500 transition-all duration-200 hover:scale-110"
               aria-label="Close assistant"
             >
-              <svg
-                width="15"
-                height="15"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              >
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
+              <HugeiconsIcon 
+                icon={Cancel01Icon} 
+                size={15} 
+                strokeWidth={1.8} 
+              />
             </button>
           </div>
         </div>
@@ -164,19 +142,12 @@ export function DashboardChatWidget({ orgName }: DashboardChatWidgetProps) {
         {/* Disclaimer */}
         <div className="px-4 py-2 bg-amber-50/50 dark:bg-amber-500/5 border-b border-amber-100/50 dark:border-amber-500/10">
           <p className="text-[11px] text-amber-700 dark:text-amber-500/80 leading-tight flex items-center gap-1.5">
-            <svg
-              width="10"
-              height="10"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              className="flex-shrink-0"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
+            <HugeiconsIcon 
+              icon={AlertCircleIcon} 
+              size={10} 
+              strokeWidth={2.5} 
+              className="flex-shrink-0" 
+            />
             AI assistant. Responses may contain errors.
           </p>
         </div>
@@ -197,20 +168,11 @@ export function DashboardChatWidget({ orgName }: DashboardChatWidgetProps) {
             onClick={clearChat}
             className="text-[11px] text-gray-400 hover:text-gray-600 transition-colors flex items-center gap-1"
           >
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            >
-              <polyline points="3 6 5 6 21 6" />
-              <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
-              <path d="M10 11v6" />
-              <path d="M14 11v6" />
-            </svg>
+            <HugeiconsIcon 
+              icon={Delete01Icon} 
+              size={12} 
+              strokeWidth={1.8} 
+            />
             Clear chat
           </button>
         </div>

@@ -40,7 +40,10 @@ export interface ObservationSummary {
 /* ── Stubbed persistence (logs only) ────────────────────────────────── */
 
 export async function logObservation(obs: NewObservation): Promise<void> {
-  console.log('[observer]', obs.severity, obs.type, obs.summary);
+  // Stubbed: silent in production until DB persistence is added
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[observer]', obs.severity, obs.type, obs.summary);
+  }
 }
 
 export async function getUnresolvedObservations(_limit = 50): Promise<AIObservation[]> {

@@ -6,7 +6,7 @@
 import type { SignedWaiver, WaiverTemplate } from './types';
 
 export async function putWaiverTemplate(_t: WaiverTemplate): Promise<void> {
-  console.log('[waivers] putWaiverTemplate no-op');
+  // Stubbed: silent no-op until feature is built
 }
 
 export async function getWaiverTemplate(_orgId: string, _waiverId: string): Promise<WaiverTemplate | null> {
@@ -18,7 +18,7 @@ export async function listWaiverTemplates(_orgId: string): Promise<WaiverTemplat
 }
 
 export async function putSignedWaiver(_w: SignedWaiver): Promise<void> {
-  console.log('[waivers] putSignedWaiver no-op');
+  // Stubbed: silent no-op until feature is built
 }
 
 export async function getSignedWaiver(_orgId: string, _signatureId: string): Promise<SignedWaiver | null> {

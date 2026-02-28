@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Cancel01Icon, ArrowRight01Icon } from '@hugeicons/core-free-icons';
 import Link from 'next/link';
 import type { SetupIssue, SetupProgress } from '@/lib/ai-guide/analyze-setup';
 
@@ -53,9 +55,7 @@ function IssueCard({ issue, onDismiss }: { issue: SetupIssue; onDismiss: () => v
         className="absolute right-3 top-3 text-[#93908C] hover:text-[#574E4C] transition-colors"
         aria-label="Dismiss"
       >
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
+        <HugeiconsIcon icon={Cancel01Icon} size={14} strokeWidth={1.8} />
       </button>
 
       <div className="flex items-start gap-3 pr-6">
@@ -81,9 +81,7 @@ function IssueCard({ issue, onDismiss }: { issue: SetupIssue; onDismiss: () => v
               }`}
             >
               {issue.action.label}
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                <path d="M4 3l3 3-3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              <HugeiconsIcon icon={ArrowRight01Icon} size={12} strokeWidth={1.8} />
             </Link>
           )}
         </div>

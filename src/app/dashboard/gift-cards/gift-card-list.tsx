@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ViewIcon } from '@hugeicons/core-free-icons';
 import { Card, CardContent } from '@/components/ui/card';
 import { GiftCardPreviewCard } from './gift-card-preview';
 
@@ -108,10 +110,7 @@ export function GiftCardList({ cards, formatAmount, orgName }: Props) {
                   className="flex items-center justify-center rounded-lg border border-border bg-card px-3 hover:bg-foreground/[0.02] transition-colors"
                   title="Preview gift card"
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                  </svg>
+                  <HugeiconsIcon icon={ViewIcon} size={18} strokeWidth={1.8} className="text-muted-foreground" />
                 </button>
               </div>
 
