@@ -36,28 +36,6 @@ export async function checkOnboardingComplete(orgId: string, currentPath: string
   // Don't check if already on onboarding page (avoid redirect loop)
   if (currentPath === '/onboarding') return;
 
-  // Check localStorage fallback (emergency bypass if onboarding page failed to save)
-  if (typeof window !== 'undefined') {
-    try {
-      const forceComplete = localStorage.getItem('bf-onboarding-force-complete');
-      if (forceComplete === 'true') {
-        // localStorage fallback detected — allowing through
-        localStorage.removeItem('bf-onboarding-force-complete'); // Clear it
-        // Try to back-fill the flag in the background
-        const db = getDb();
-        const org = await db.getOrg(orgId);
-        if (org) {
-          db.putOrg({ ...org, onboardingComplete: true }).catch((err) => {
-            console.error('[checkOnboardingComplete] Failed to back-fill from localStorage:', err);
-          });
-        }
-        return;
-      }
-    } catch {
-      // Ignore localStorage errors
-    }
-  }
-
   // Anti-loop protection: check redirect history
   const now = Date.now();
   const fiveMinutesAgo = now - 5 * 60 * 1000;

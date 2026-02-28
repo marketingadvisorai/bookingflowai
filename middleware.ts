@@ -44,14 +44,44 @@ export function middleware(req: NextRequest) {
   const token = req.cookies.get('bf_session')?.value;
   if (!token) return NextResponse.next();
 
+  /* ── Redirect logged-in users away from /login and /signup ── */
+  if (pathname === '/login' || pathname === '/signup') {
+    const dashUrl = req.nextUrl.clone();
+    dashUrl.pathname = '/dashboard';
+    dashUrl.search = '';
+    const redirectRes = NextResponse.redirect(dashUrl);
+    // Renew cookie with sliding window
+    redirectRes.cookies.set({
+      name: 'bf_session',
+      value: token,
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      maxAge: 30 * 60, // 30 minutes
+    });
+    return redirectRes;
+  }
+
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set('x-bf-session', token);
 
-  return NextResponse.next({
+  /* ── Sliding window: renew cookie expiry on every request ── */
+  const res = NextResponse.next({
     request: {
       headers: requestHeaders,
     },
   });
+  res.cookies.set({
+    name: 'bf_session',
+    value: token,
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: 30 * 60, // 30 minutes
+  });
+  return res;
 }
 
 export const config = {

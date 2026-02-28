@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { getDb } from '@/lib/db';
 
 export const SESSION_COOKIE = 'bf_session';
+export const SESSION_MAX_AGE_MS = 30 * 60_000; // 30 minutes
 
 function isExpired(expiresAt: string) {
   const ts = Date.parse(expiresAt);
@@ -31,5 +32,9 @@ export async function getSessionFromCookies() {
     return null;
   }
 
-  return ses;
+  // Sliding window: extend session by 30 minutes on every access
+  const newExpiry = new Date(Date.now() + SESSION_MAX_AGE_MS).toISOString();
+  await db.putSession({ ...ses, expiresAt: newExpiry }).catch(() => null);
+
+  return { ...ses, expiresAt: newExpiry };
 }

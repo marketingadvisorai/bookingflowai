@@ -75,7 +75,7 @@ export async function POST(req: Request) {
   await db.putUser(user);
 
   const sessionToken = `sess_${createId()}`;
-  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60_000).toISOString();
+  const expiresAt = new Date(Date.now() + 30 * 60_000).toISOString();
   await db.putSession({ sessionToken, userId, orgId, createdAt: nowIso(), expiresAt });
 
   const res = NextResponse.json({ ok: true, user: { userId, orgId, email, role: user.role } });
