@@ -5,6 +5,7 @@ import { PromoCodeField } from '../promo-code-field';
 import { emitBFEvent } from '../widget-tracking';
 import type { Slot, BookingType } from '../widget-utils';
 import { fmtTime, yyyyMmDdLocal, friendlyError } from '../widget-utils';
+import { BookingCalendar } from '../BookingCalendar';
 import { validatePromoCode, type PromoStatus } from '../validate-promo';
 import { WidgetBackground, WidgetHeader } from '../widget-chrome';
 import { ConfirmBar } from '../confirm-bar';
@@ -738,46 +739,15 @@ export function WizardLayout({
                 <button type="button" onClick={() => setStep(1)} className="text-[var(--widget-primary)] hover:underline text-xs">Edit</button>
               </div>
 
-              <div className="rounded-2xl border border-gray-200 dark:border-white/[0.06] bg-[#FFFDF9] dark:bg-[#1a1a1d] backdrop-blur-xl p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <HugeiconsIcon icon={CalendarIcon} size={14} strokeWidth={1.8} className="text-muted-foreground dark:text-[rgba(255,255,255,0.35)]" />
-                    <label className="text-xs text-muted-foreground dark:text-[rgba(255,255,255,0.55)]">Date</label>
-                  </div>
-                  <div className="text-[11px] text-muted-foreground dark:text-[rgba(255,255,255,0.35)]">{dateLabel}</div>
-                </div>
-                <div className="mt-2 flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const d = new Date(date + 'T00:00:00');
-                      d.setDate(d.getDate() - 1);
-                      setDate(yyyyMmDdLocal(d));
-                    }}
-                    className="h-10 w-10 rounded-xl bg-gray-100 border border-gray-200 dark:border-white/[0.06] dark:bg-white/[0.03] text-foreground dark:text-[#fafaf9] hover:bg-gray-200 dark:hover:bg-white/[0.06] transition-all duration-200"
-                  >
-                    ←
-                  </button>
-                  <input
-                    type="date"
-                    value={date}
-                    min={today}
-                    onChange={(e) => setDate(e.target.value)}
-                    className="h-10 w-full rounded-xl bg-gray-100 border border-gray-200 dark:border-white/[0.06] dark:bg-white/[0.03] px-3 text-sm text-foreground dark:text-[#fafaf9] outline-none focus:border-[var(--widget-primary)]/50 transition-all duration-200"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const d = new Date(date + 'T00:00:00');
-                      d.setDate(d.getDate() + 1);
-                      setDate(yyyyMmDdLocal(d));
-                    }}
-                    className="h-10 w-10 rounded-xl bg-gray-100 border border-gray-200 dark:border-white/[0.06] dark:bg-white/[0.03] text-foreground dark:text-[#fafaf9] hover:bg-gray-200 dark:hover:bg-white/[0.06] transition-all duration-200"
-                  >
-                    →
-                  </button>
-                </div>
-              </div>
+              <BookingCalendar
+                date={date}
+                setDate={setDate}
+                today={today}
+                orgId={orgId}
+                gameId={gameId}
+                players={players}
+                bookingType={type}
+              />
 
               <button
                 type="button"

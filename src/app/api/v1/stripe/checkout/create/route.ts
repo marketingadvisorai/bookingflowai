@@ -175,6 +175,7 @@ export async function POST(req: Request) {
     session = await stripe.checkout.sessions.create({
     mode: 'payment',
     ui_mode: 'embedded',
+    redirect_on_completion: 'if_required',
     // MVP: keep payment methods synchronous to avoid long-running async payments outliving our short hold TTL.
     payment_method_types: ['card'],
     return_url: returnUrlFinal,

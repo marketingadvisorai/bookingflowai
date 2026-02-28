@@ -5,6 +5,7 @@ import { PromoCodeField } from './promo-code-field';
 import { emitBFEvent } from './widget-tracking';
 import type { Slot, BookingType } from './widget-utils';
 import { fmtTime, yyyyMmDdLocal } from './widget-utils';
+import { BookingCalendar } from './BookingCalendar';
 import { validatePromoCode, type PromoStatus } from './validate-promo';
 import { WidgetBackground, WidgetHeader } from './widget-chrome';
 import { ConfirmBar } from './confirm-bar';
@@ -67,11 +68,30 @@ function friendlyError(code: string | null): string {
 
 export function BookingWidgetDemo({
   orgId = 'org_demo',
-  gameId = 'game_axe',
+  gameId: gameIdProp,
   theme = 'dark',
   primaryColor,
   radius,
 }: Props) {
+  const [resolvedGameId, setResolvedGameId] = useState(gameIdProp ?? '');
+
+  // Auto-select first game from catalog when no gameId provided
+  useEffect(() => {
+    if (gameIdProp) { setResolvedGameId(gameIdProp); return; }
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/v1/catalog?orgId=${encodeURIComponent(orgId)}`, { cache: 'no-store' });
+        const body = await res.json().catch(() => null);
+        if (!cancelled && body?.ok && body.games?.length > 0) {
+          setResolvedGameId(body.games[0].gameId);
+        }
+      } catch { /* ignore */ }
+    })();
+    return () => { cancelled = true; };
+  }, [orgId, gameIdProp]);
+
+  const gameId = resolvedGameId;
   // Currency formatter helper
   const formatCurrency = (cents: number, currency = 'USD') => {
     const dollars = cents / 100;
@@ -166,17 +186,20 @@ export function BookingWidgetDemo({
   const [promoStatus, setPromoStatus] = useState<PromoStatus>('idle');
   const [promoMessage, setPromoMessage] = useState<string>('');
 
+  const [tick, setTick] = useState(0);
+
   const remainingMs = useMemo(() => {
     if (!holdExpiresAt) return null;
+    void tick; // dependency to recalculate each second
     const ms = new Date(holdExpiresAt).getTime() - Date.now();
     return ms;
-  }, [holdExpiresAt]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [holdExpiresAt, tick]);
 
   useEffect(() => {
     if (!holdExpiresAt) return;
     const t = setInterval(() => {
-      // force rerender
-      setHoldExpiresAt((v) => v);
+      setTick((v) => v + 1);
     }, 1000);
     return () => clearInterval(t);
   }, [holdExpiresAt]);
@@ -360,10 +383,10 @@ export function BookingWidgetDemo({
       setHoldExpiresAt(expiresAt);
       emitBFEvent('hold_created', { orgId, gameId, holdId: nextHoldId, expiresAt });
 
-      // UX: after selecting a slot, gently nudge toward customer section.
+      // Auto-scroll to customer section after slot selected
       setTimeout(() => {
-        customerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }, 50);
+        customerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 150);
     } finally {
       setLoading(false);
     }
@@ -722,46 +745,15 @@ export function BookingWidgetDemo({
             </div>
           </div>
 
-          <div className="rounded-2xl border border-gray-200 dark:border-white/[0.06] bg-[#FFFDF9] dark:bg-[#1a1a1d] backdrop-blur-xl p-4">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-medium text-gray-700 dark:text-[#fafaf9]">Date</label>
-              <div className="text-[11px] text-gray-600 dark:text-[rgba(255,255,255,0.55)]">{dateLabel}</div>
-            </div>
-            <div className="mt-2 flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  const d = new Date(date + 'T00:00:00');
-                  d.setDate(d.getDate() - 1);
-                  setDate(yyyyMmDdLocal(d));
-                }}
-                className="h-10 w-10 rounded-xl bg-gray-100 border border-gray-200 dark:border-white/[0.06] dark:bg-white/[0.03] text-foreground dark:text-[#fafaf9] hover:dark:bg-white/[0.06] transition-all duration-200"
-                aria-label="Previous day"
-              >
-                ←
-              </button>
-              <input
-                type="date"
-                value={date}
-                min={today}
-                onChange={(e) => setDate(e.target.value)}
-                className="h-10 w-full rounded-xl bg-gray-100 border border-gray-200 dark:border-white/[0.06] dark:bg-white/[0.03] px-3 text-sm text-foreground dark:text-[#fafaf9] outline-none focus:border-[var(--widget-primary)]/50 transition-all duration-200"
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  const d = new Date(date + 'T00:00:00');
-                  d.setDate(d.getDate() + 1);
-                  setDate(yyyyMmDdLocal(d));
-                }}
-                className="h-10 w-10 rounded-xl bg-gray-100 border border-gray-200 dark:border-white/[0.06] dark:bg-white/[0.03] text-foreground dark:text-[#fafaf9] hover:dark:bg-white/[0.06] transition-all duration-200"
-                aria-label="Next day"
-              >
-                →
-              </button>
-            </div>
-            <div className="mt-2 text-[11px] text-gray-600 dark:text-[rgba(255,255,255,0.35)]">Tip: use the arrows to change day quickly.</div>
-          </div>
+          <BookingCalendar
+            date={date}
+            setDate={setDate}
+            today={today}
+            orgId={orgId}
+            gameId={gameId}
+            players={players}
+            bookingType={type}
+          />
         </div>
 
         <div className="mt-4 flex flex-wrap items-center gap-3">
