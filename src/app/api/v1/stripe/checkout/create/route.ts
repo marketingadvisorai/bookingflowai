@@ -115,8 +115,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: 'hold_expired', message: await explainError('hold_expired') }, { status: 409, headers });
   }
 
-  // Extend hold TTL to 30 minutes from now — matches Stripe Checkout default timeout.
-  const extendedExpiresAt = new Date(Date.now() + 30 * 60_000).toISOString();
+  // Extend hold TTL to 10 minutes from now.
+  const extendedExpiresAt = new Date(Date.now() + 10 * 60_000).toISOString();
   if (new Date(hold.expiresAt).getTime() < new Date(extendedExpiresAt).getTime()) {
     hold.expiresAt = extendedExpiresAt;
     try {

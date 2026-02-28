@@ -129,7 +129,7 @@ export async function POST(req: Request) {
   }
 
   const createdAt = nowIso();
-  const expiresAt = new Date(Date.now() + 30 * 60_000).toISOString(); // 30 min hold (matches Stripe Checkout timeout)
+  const expiresAt = new Date(Date.now() + 10 * 60_000).toISOString(); // 10 min hold
 
   const hold = {
     orgId,
