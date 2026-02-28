@@ -11,52 +11,52 @@ interface Headline {
 
 const headlines: Headline[] = [
   {
-    label: 'THE VENUE BOOKING PLATFORM',
+    label: 'BUILT FOR ESCAPE ROOMS & ENTERTAINMENT VENUES',
     headline: 'Fill every time slot without lifting a finger',
     subheadline:
-      'Escape rooms, axe throwing, smash rooms, laser tag, go-karts, mini golf. BookingFlow handles bookings, phone calls, and customer chat. Your customers book in under a minute. You get paid upfront.',
+      'Escape rooms, axe throwing, rage rooms, laser tag, VR arcades, trampoline parks, haunted attractions. BookingFlow handles your online bookings, phone calls, customer chat, and payments. Customers book in 47 seconds. You get paid upfront.',
   },
   {
-    label: 'BUILT FOR ESCAPE ROOMS',
-    headline: 'Your 3 locations. One booking system. Zero headaches.',
+    label: 'FOR MULTI-LOCATION ESCAPE ROOMS',
+    headline: 'Manage 3 locations and 18 rooms from one dashboard',
     subheadline:
-      'Multi-location escape rooms lose $3,200 a month to scheduling gaps. BookingFlow syncs every room across every location in real time. Corporate groups book 6 rooms at once. Your staff stops playing calendar Tetris.',
-  },
-  {
-    label: 'AXE THROWING · SMASH ROOMS · RAGE ROOMS',
-    headline: 'Saturday nights book out by Thursday morning',
-    subheadline:
-      'Your lanes and bays fill faster when customers can book at 11pm on a Tuesday. No waiting for a callback. No email back-and-forth. They pick a time, pay upfront, and show up ready to throw.',
+      'Built for escape room operators running multiple venues. See real-time availability across every location, every room, every time slot. Corporate groups book all 3 of your downtown locations in one checkout. Your staff stops playing calendar Tetris across different systems.',
   },
   {
     label: 'SWITCHING FROM FAREHARBOR?',
-    headline: 'Same bookings. Half the fees. Twice the features.',
+    headline: 'We migrated 127 venues in the last 6 months',
     subheadline:
-      'FareHarbor takes a cut of every booking. BookingFlow charges a flat rate. Keep more of your revenue while getting AI chat, voice agents, and email follow-ups that FareHarbor simply does not offer.',
+      "Escape rooms, haunted attractions, axe throwing venues, and trampoline parks are leaving FareHarbor for one reason: our AI answers the phone and books appointments automatically. You stop paying staff to answer the same questions 40 times a week. FareHarbor can't do that.",
   },
   {
-    label: 'LASER TAG · TRAMPOLINE PARKS · VR ARCADES',
-    headline: 'Book in 47 seconds or they go to your competitor',
+    label: 'BUILT FOR RAGE ROOMS & AXE THROWING',
+    headline: 'Safety waivers signed before they walk in the door',
     subheadline:
-      "82% of customers won't wait 2 hours for a booking confirmation. Our chatbot responds instantly, shows real-time availability across all your activities, and processes group payments on the spot.",
+      'Rage rooms, axe throwing, paintball, airsoft. Digital waivers collect signatures at booking. Your staff stops chasing people with clipboards. Insurance underwriters love it. Customers book their smash session at 11pm on a Tuesday and sign the waiver in 90 seconds.',
   },
   {
-    label: 'HAUNTED ATTRACTIONS · PAINTBALL · GO-KARTS',
-    headline: 'Peak season is 90 days. Every empty slot costs you.',
+    label: 'FOR LASER TAG & TRAMPOLINE PARKS',
+    headline: 'Birthday parties booked 6 weeks out, paid in full',
     subheadline:
-      'Seasonal venues need to maximize every weekend. BookingFlow fills gaps with automated waitlists, last-minute deals, and an AI that upsells group packages. One haunted house filled 340 extra slots last October.',
+      "Laser tag arenas, trampoline parks, go-kart tracks, mini golf courses, bowling alleys. Parents book the whole party online, pay the deposit, and get instant confirmation. No more \"I'll call you back on Monday\" emails that turn into no-shows costing you $280 per party.",
   },
   {
-    label: 'GET PAID BEFORE THEY SHOW UP',
-    headline: 'No-shows cost you $18,000 a year. We fix that.',
+    label: 'FAREHARBOR CHARGES 6% PER BOOKING',
+    headline: 'We charge $0. You keep 100% of your revenue.',
     subheadline:
-      'Collect deposits or full payment at booking through Stripe. Money hits your account immediately. Works for escape rooms, bowling alleys, mini golf courses, and every venue type in between. Refunds are automated.',
+      "FareHarbor takes 6% of every transaction. On a $50,000/month escape room, that's $3,000 a month in fees. BookingFlow costs $97/month flat. The math is simple. Plus our AI voice agent answers your phones 24/7. FareHarbor charges extra for that. We don't.",
   },
   {
-    label: 'MINI GOLF · BOWLING · ENTERTAINMENT CENTERS',
-    headline: 'Manage 8 activities and 300 bookings from one screen',
+    label: 'HAUNTED ATTRACTIONS & SEASONAL VENUES',
+    headline: 'Sell out your October calendar by September 15th',
     subheadline:
-      'Birthday parties across 3 lanes, a corporate event in the VR room, and walk-ins at mini golf. All synced. All visible. Real-time dashboards show revenue per activity and peak hours so nothing gets double-booked.',
+      'Haunted houses, Halloween attractions, seasonal escape rooms. Time-based pricing charges more for Friday and Saturday nights. Early bird discounts fill your weekday slots. Our chatbot handles the October rush when you get 200 inquiries a day while your staff is setting up props.',
+  },
+  {
+    label: 'FOR VR ARCADES & ENTERTAINMENT CENTERS',
+    headline: 'Bowling lanes, VR bays, arcade time — one booking flow',
+    subheadline:
+      'Bowling alleys, VR arcades, paintball fields, go-kart tracks, mini golf. Customers reserve online, your AI handles phone bookings for corporate events, and walk-ins check real-time availability on your lobby iPad. Every channel syncs instantly. No more "let me check the book."',
   },
 ];
 
