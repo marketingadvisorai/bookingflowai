@@ -105,9 +105,11 @@ export function WizardLayout({
 
   const stripeAvailableRef = useRef<boolean | null>(null);
 
-  /* ── nudge system ── */
-  const { current: currentNudge, enqueue: enqueueNudge, dismiss: dismissNudge } = useNudgeQueue();
-  const { idleSeconds } = useIdleTracker(!!holdId);
+  /* ── nudge system (disabled — causes React #310 crash) ── */
+  const currentNudge = null;
+  const enqueueNudge = (_n: unknown) => {};
+  const dismissNudge = () => {};
+  const idleSeconds = 0;
 
   /* ── hold expiry & confirmation ── */
   const [holdExpired, setHoldExpired] = useState(false);
@@ -543,24 +545,7 @@ export function WizardLayout({
         <div className="relative">
           <WidgetHeader />
 
-          {/* ── Smart Nudge (prominent at top) ── */}
-          {currentNudge && (
-            <SmartNudge nudge={currentNudge} onDismiss={dismissNudge} />
-          )}
-
-          {/* ── Idle Helper (contextual suggestions) ── */}
-          <IdleHelper
-            idleSeconds={idleSeconds}
-            stage={
-              step === 4 && (name.trim() || email.trim()) 
-                ? 'customer_form' 
-                : holdId 
-                  ? 'slot_selected' 
-                  : step === 3 && slots.length > 0 
-                    ? 'time_selection' 
-                    : 'idle'
-            }
-          />
+          {/* ── Smart Nudge + Idle Helper disabled (React #310 investigation) ── */}
 
           {/* ── Step Indicator with Progress Bar ── */}
           {!confirmed && (

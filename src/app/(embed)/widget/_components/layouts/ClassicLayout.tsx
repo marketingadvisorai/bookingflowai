@@ -132,8 +132,11 @@ export function ClassicLayout({
   const [confirmedBookingId, setConfirmedBookingId] = useState<string | null>(null);
 
   /* ── nudge system ── */
-  const { current: currentNudge, enqueue: enqueueNudge, dismiss: dismissNudge } = useNudgeQueue();
-  const { idleSeconds } = useIdleTracker(!!holdId);
+  /* ── nudge system (disabled — causes React #310 crash) ── */
+  const currentNudge = null;
+  const enqueueNudge = (_n: unknown) => {};
+  const dismissNudge = () => {};
+  const idleSeconds = 0;
 
   /* ── hold countdown ── */
   const [now, setNow] = useState(() => Date.now());
@@ -571,24 +574,7 @@ export function ClassicLayout({
         <div className="relative space-y-6">
           <WidgetHeader />
 
-          {/* ── Smart Nudge (prominent at top) ── */}
-          {currentNudge && (
-            <SmartNudge nudge={currentNudge} onDismiss={dismissNudge} />
-          )}
-
-          {/* ── Idle Helper (contextual suggestions) ── */}
-          <IdleHelper
-            idleSeconds={idleSeconds}
-            stage={
-              holdId && (name.trim() || email.trim()) 
-                ? 'customer_form' 
-                : holdId 
-                  ? 'slot_selected' 
-                  : slots.length > 0 
-                    ? 'time_selection' 
-                    : 'idle'
-            }
-          />
+          {/* ── Smart Nudge + Idle Helper disabled (React #310 investigation) ── */}
 
           {/* ── Booking Confirmed ── */}
           {confirmed && (
