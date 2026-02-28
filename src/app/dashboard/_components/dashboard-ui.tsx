@@ -6,6 +6,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import Link from 'next/link';
 import type { Booking, Game } from '@/lib/booking/types';
 import { RecommendationsList } from '@/components/ai-guide/recommendations-list';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { PlusSignIcon, Door01Icon, SourceCodeSquareIcon, Settings01Icon } from '@hugeicons/core-free-icons';
 
 type DashboardStats = {
   totalBookings: number;
@@ -262,24 +264,28 @@ export function DashboardUI({ stats, recentBookings, gameById, greeting, hasGame
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             <Link href="/dashboard/games" className="block">
               <div className="group cursor-pointer rounded-lg border border-border/50 bg-card/30 p-4 text-center transition-all hover:border-[#FF4A00]/50 hover:bg-card/50">
+                <HugeiconsIcon icon={PlusSignIcon} strokeWidth={1.8} size={20} className="mx-auto mb-2 text-muted-foreground group-hover:text-[#FF4A00] transition-colors" />
                 <div className="text-sm font-medium">Create Game</div>
               </div>
             </Link>
 
             <Link href="/dashboard/rooms" className="block">
               <div className="group cursor-pointer rounded-lg border border-border/50 bg-card/30 p-4 text-center transition-all hover:border-[#FF4A00]/50 hover:bg-card/50">
+                <HugeiconsIcon icon={Door01Icon} strokeWidth={1.8} size={20} className="mx-auto mb-2 text-muted-foreground group-hover:text-[#FF4A00] transition-colors" />
                 <div className="text-sm font-medium">Manage Rooms</div>
               </div>
             </Link>
 
             <Link href="/dashboard/embed" className="block">
               <div className="group cursor-pointer rounded-lg border border-border/50 bg-card/30 p-4 text-center transition-all hover:border-[#FF4A00]/50 hover:bg-card/50">
+                <HugeiconsIcon icon={SourceCodeSquareIcon} strokeWidth={1.8} size={20} className="mx-auto mb-2 text-muted-foreground group-hover:text-[#FF4A00] transition-colors" />
                 <div className="text-sm font-medium">Embed Code</div>
               </div>
             </Link>
 
             <Link href="/dashboard/settings" className="block">
               <div className="group cursor-pointer rounded-lg border border-border/50 bg-card/30 p-4 text-center transition-all hover:border-[#FF4A00]/50 hover:bg-card/50">
+                <HugeiconsIcon icon={Settings01Icon} strokeWidth={1.8} size={20} className="mx-auto mb-2 text-muted-foreground group-hover:text-[#FF4A00] transition-colors" />
                 <div className="text-sm font-medium">Settings</div>
               </div>
             </Link>

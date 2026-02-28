@@ -14,7 +14,7 @@ import { NudgeOverlay } from '@/components/nudge/nudge-overlay';
 import { DashboardThemeProvider } from './_components/dashboard-theme';
 import { 
   Home01Icon, 
-  GameController01Icon, 
+  PuzzleIcon, 
   Door01Icon, 
   CalendarIcon, 
   Ticket01Icon, 
@@ -39,7 +39,7 @@ type NavItem = {
 
 const NAV: NavItem[] = [
   { href: '/dashboard', label: 'Overview', icon: Home01Icon },
-  { href: '/dashboard/games', label: 'Games', icon: GameController01Icon },
+  { href: '/dashboard/games', label: 'Games', icon: PuzzleIcon },
   { href: '/dashboard/rooms', label: 'Rooms', icon: Door01Icon },
   { href: '/dashboard/schedules', label: 'Schedules', icon: CalendarIcon },
   { href: '/dashboard/bookings', label: 'Bookings', icon: Ticket01Icon },
