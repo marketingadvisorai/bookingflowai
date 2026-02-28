@@ -17,7 +17,9 @@ export function middleware(req: NextRequest) {
   }
 
   /* ── Marketing domain: redirect auth/dashboard routes to dash.bookingflowai.com ── */
-  const isMarketingDomain = hostname === 'bookingflowai.com' || hostname === 'www.bookingflowai.com';
+  const forwardedHost = req.headers.get('x-forwarded-host') || '';
+  const effectiveHost = forwardedHost || hostname;
+  const isMarketingDomain = effectiveHost.replace(/:\d+$/, '') === 'bookingflowai.com' || effectiveHost.replace(/:\d+$/, '') === 'www.bookingflowai.com';
   if (isMarketingDomain && (
     pathname.startsWith('/login') ||
     pathname.startsWith('/signup') ||
