@@ -16,6 +16,20 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  /* ── Marketing domain: redirect auth/dashboard routes to dash.bookingflowai.com ── */
+  const isMarketingDomain = hostname === 'bookingflowai.com' || hostname === 'www.bookingflowai.com';
+  if (isMarketingDomain && (
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/signup') ||
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/onboarding') ||
+    pathname.startsWith('/forgot-password') ||
+    pathname.startsWith('/reset-password') ||
+    pathname.startsWith('/api/dashboard')
+  )) {
+    return NextResponse.redirect(new URL(pathname + req.nextUrl.search, 'https://dash.bookingflowai.com'));
+  }
+
   /* ── Domain-based routing: escapeboost.com → /escapeboost/* ── */
   if (hostname === 'escapeboost.com' || hostname === 'www.escapeboost.com') {
     if (!pathname.startsWith('/escapeboost') && !pathname.startsWith('/_next') && !pathname.startsWith('/api')) {
