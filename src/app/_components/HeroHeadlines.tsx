@@ -23,10 +23,10 @@ const headlines: Headline[] = [
       'Built for escape room operators running multiple venues. See real-time availability across every location, every room, every time slot. Corporate groups book all 3 of your downtown locations in one checkout. Your staff stops playing calendar Tetris across different systems.',
   },
   {
-    label: 'SWITCHING FROM FAREHARBOR?',
+    label: 'TIRED OF PER-BOOKING FEES?',
     headline: 'We migrated 127 venues in the last 6 months',
     subheadline:
-      "Escape rooms, haunted attractions, axe throwing venues, and trampoline parks are leaving FareHarbor for one reason: our AI answers the phone and books appointments automatically. You stop paying staff to answer the same questions 40 times a week. FareHarbor can't do that.",
+      "Escape rooms, haunted attractions, axe throwing venues, and trampoline parks are leaving legacy booking platforms for one reason: our AI answers the phone and books appointments automatically. You stop paying staff to answer the same questions 40 times a week. Those old-school tools can't do that.",
   },
   {
     label: 'BUILT FOR RAGE ROOMS & AXE THROWING',
@@ -41,10 +41,10 @@ const headlines: Headline[] = [
       "Laser tag arenas, trampoline parks, go-kart tracks, mini golf courses, bowling alleys. Parents book the whole party online, pay the deposit, and get instant confirmation. No more \"I'll call you back on Monday\" emails that turn into no-shows costing you $280 per party.",
   },
   {
-    label: 'FAREHARBOR CHARGES 6% PER BOOKING',
+    label: 'YOUR BOOKING TOOL TAKES 6% PER TICKET',
     headline: 'We charge $0. You keep 100% of your revenue.',
     subheadline:
-      "FareHarbor takes 6% of every transaction. On a $50,000/month escape room, that's $3,000 a month in fees. BookingFlow costs $97/month flat. The math is simple. Plus our AI voice agent answers your phones 24/7. FareHarbor charges extra for that. We don't.",
+      "Your current platform takes 6% of every transaction. On a $50,000/month escape room, that's $3,000 a month in fees. BookingFlow costs $97/month flat. The math is simple. Plus our AI voice agent answers your phones 24/7. Most booking tools charge extra for that. We don't.",
   },
   {
     label: 'HAUNTED ATTRACTIONS & SEASONAL VENUES',
