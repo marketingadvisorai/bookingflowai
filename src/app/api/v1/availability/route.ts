@@ -3,6 +3,7 @@ import { availabilityQuerySchema } from '@/lib/booking/validators';
 import { computeSlots } from '@/lib/booking/availability';
 import { getDb } from '@/lib/db';
 import { corsOptions, enforceCors } from '@/lib/http/cors-enforce';
+import { logError } from '@/lib/logging';
 
 export async function OPTIONS(req: Request) {
   return corsOptions(req);
@@ -21,7 +22,21 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const parsed = availabilityQuerySchema.safeParse(Object.fromEntries(url.searchParams.entries()));
     if (!parsed.success) {
-      return NextResponse.json({ ok: false, error: 'invalid_request', message: 'Please check your search parameters and try again.' }, { status: 400, headers });
+      const fieldErrors = parsed.error.issues.map(issue => ({
+        field: issue.path.join('.') || String(issue.path[0] ?? 'unknown'),
+        message: issue.message,
+        code: issue.code,
+      }));
+      const missingFields = fieldErrors.filter(e => e.code === 'invalid_type' || e.message.toLowerCase().includes('required'));
+      const errorMessage = missingFields.length > 0
+        ? `Missing required fields: ${missingFields.map(e => e.field).join(', ')}`
+        : `Validation failed: ${fieldErrors.map(e => `${e.field} - ${e.message}`).join('; ')}`;
+      return NextResponse.json({ 
+        ok: false, 
+        error: 'invalid_request', 
+        message: errorMessage,
+        fields: fieldErrors.map(({ field, message }) => ({ field, message })),
+      }, { status: 400, headers });
     }
 
     const { orgId, gameId, date, type, players } = parsed.data;
@@ -76,7 +91,9 @@ export async function GET(req: Request) {
 
     return NextResponse.json({ ok: true, slots }, { headers });
   } catch (err) {
-    console.error('Availability error:', err);
+    const url = new URL(req.url);
+    const orgId = url.searchParams.get('orgId') ?? 'unknown';
+    logError('api.availability', 'failed', err, { orgId, endpoint: '/api/v1/availability' });
     return NextResponse.json({ ok: false, error: 'server_error', message: 'Something went wrong. Please try again in a moment.' }, { status: 500, headers });
   }
 }

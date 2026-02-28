@@ -7,6 +7,7 @@ import { getDb } from '@/lib/db';
 import { corsOptions, enforceCors } from '@/lib/http/cors-enforce';
 import { getClientIp, rateLimit } from '@/lib/http/rate-limit';
 import { addRateLimitHeaders } from '@/lib/http/errors';
+import { logError, log } from '@/lib/logging';
 
 function nowIso() {
   return new Date().toISOString();
@@ -45,7 +46,16 @@ export async function POST(req: Request) {
   
   const parsed = createHoldBodySchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ ok: false, error: 'invalid_request' }, { status: 400, headers });
+    const fieldErrors = parsed.error.issues.map(issue => ({
+      field: issue.path.join('.'),
+      message: issue.message,
+    }));
+    return NextResponse.json({ 
+      ok: false, 
+      error: 'invalid_request',
+      message: `Validation failed: ${fieldErrors.map(e => `${e.field} - ${e.message}`).join('; ')}`,
+      fields: fieldErrors,
+    }, { status: 400, headers });
   }
 
   const { orgId, gameId, roomId, bookingType, startAt, endAt, players, customer } = parsed.data;
@@ -163,9 +173,10 @@ export async function POST(req: Request) {
   } catch (err) {
     const name = err instanceof Error ? err.name : '';
     if (name === 'TransactionCanceledException' || name === 'ConditionalCheckFailedException') {
+      log.warn('api.holds', 'slot_conflict', { orgId, gameId, roomId, startAt });
       return NextResponse.json({ ok: false, error: 'slot_unavailable', message: 'This slot was just taken. Please try a different time.' }, { status: 409, headers });
     }
-    console.error('Hold creation error:', err);
+    logError('api.holds', 'creation_failed', err, { orgId, gameId, roomId, endpoint: '/api/v1/holds' });
     return NextResponse.json({ ok: false, error: 'server_error', message: 'Something went wrong creating your hold. Please try again.' }, { status: 500, headers });
   }
 

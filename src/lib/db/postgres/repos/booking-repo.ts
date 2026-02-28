@@ -146,5 +146,42 @@ export function createBookingRepo(db: DrizzleDb) {
       const r = await db.select({ count: sql<number>`count(*)::int` }).from(bookings);
       return r[0]?.count ?? 0;
     },
+    
+    /**
+     * Expire all stale holds: status='active' AND expires_at < NOW()
+     * Uses TEXT comparison (ISO 8601 strings are lexicographically sortable).
+     * Returns count of expired holds.
+     */
+    async expireStaleHolds(): Promise<number> {
+      const nowIso = new Date().toISOString();
+      const result = await db
+        .update(holds)
+        .set({ status: 'expired' })
+        .where(
+          and(
+            eq(holds.status, 'active'),
+            sql`${holds.expiresAt} < ${nowIso}`
+          )
+        );
+      // Drizzle returns rowCount for postgres driver
+      return (result as { rowCount?: number }).rowCount ?? 0;
+    },
+    
+    /**
+     * Get count of active non-expired holds (for monitoring).
+     */
+    async countActiveHolds(): Promise<number> {
+      const nowIso = new Date().toISOString();
+      const r = await db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(holds)
+        .where(
+          and(
+            eq(holds.status, 'active'),
+            sql`${holds.expiresAt} >= ${nowIso}`
+          )
+        );
+      return r[0]?.count ?? 0;
+    },
   };
 }

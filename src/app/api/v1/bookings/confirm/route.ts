@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { confirmBookingBodySchema } from '@/lib/booking/validators';
 import { getDb } from '@/lib/db';
 import { corsOptions, enforceCors } from '@/lib/http/cors-enforce';
+import { logError, log } from '@/lib/logging';
 
 function nowIso() {
   return new Date().toISOString();
@@ -38,7 +39,16 @@ export async function POST(req: Request) {
   
   const parsed = confirmBookingBodySchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ ok: false, error: 'invalid_request' }, { status: 400, headers });
+    const fieldErrors = parsed.error.issues.map(issue => ({
+      field: issue.path.join('.'),
+      message: issue.message,
+    }));
+    return NextResponse.json({ 
+      ok: false, 
+      error: 'invalid_request',
+      message: `Validation failed: ${fieldErrors.map(e => `${e.field} - ${e.message}`).join('; ')}`,
+      fields: fieldErrors,
+    }, { status: 400, headers });
   }
 
   const { orgId, holdId, promoCode, customer: customerOverride } = parsed.data;
@@ -156,7 +166,7 @@ export async function POST(req: Request) {
       await db.putHold(orgId, hold);
       return NextResponse.json({ ok: true, booking, idempotent: true }, { status: 200, headers });
     }
-    console.error('Confirm booking error:', err);
+    logError('api.bookings', 'confirm_failed', err, { orgId, holdId, endpoint: '/api/v1/bookings/confirm' });
     return NextResponse.json({ ok: false, error: 'server_error', message: 'Something went wrong confirming your booking. Please try again.' }, { status: 500, headers });
   }
 

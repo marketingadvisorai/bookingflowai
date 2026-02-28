@@ -8,6 +8,7 @@ import { getDb } from '@/lib/db';
 import { confirmHoldToBooking } from '@/lib/booking/confirm-hold';
 import { calcDepositCents } from '@/lib/stripe/money';
 import { claimStripeEvent, releaseStripeEvent } from '@/lib/stripe/idempotency';
+import { log, logError } from '@/lib/logging';
 
 function nowIso() {
   return new Date().toISOString();
@@ -120,9 +121,9 @@ export async function POST(req: Request) {
                 sql`UPDATE gift_cards SET stripe_payment_intent_id = ${piId}, updated_at = ${nowIso()} WHERE id = ${md.giftCardId}`
               );
             }
-            console.log(`[stripe/webhook] Gift card payment confirmed: ${md.giftCardId}`);
+            log.info('stripe.webhook', 'gift_card_confirmed', { giftCardId: md.giftCardId });
           } catch (e) {
-            console.error('[stripe/webhook] Gift card update error:', e instanceof Error ? e.message : e);
+            logError('stripe.webhook', 'gift_card_update_failed', e, { giftCardId: md.giftCardId });
           }
         }
         return NextResponse.json({ ok: true, received: true, type: event.type, giftCard: 'processed' });
@@ -149,13 +150,13 @@ export async function POST(req: Request) {
       const db = getDb();
       const [org, hold] = await Promise.all([db.getOrg(orgId), db.getHold(orgId, holdId)]);
       if (!org) {
-        console.error(`[stripe/webhook] Org not found: orgId=${orgId}, sessionId=${sessionId}, holdId=${holdId}`);
+        log.warn('stripe.webhook', 'org_not_found', { orgId, sessionId, holdId, eventType: event.type });
         return NextResponse.json({ ok: true, received: true, type: event.type, ignored: 'missing_org' });
       }
       if (!hold) {
         // FALLBACK: Hold expired or deleted but payment succeeded.
         // Create booking directly from Stripe session metadata.
-        console.error(`[stripe/webhook] Hold not found but payment succeeded — creating booking from metadata. orgId=${orgId}, holdId=${holdId}, sessionId=${sessionId}`);
+        log.warn('stripe.webhook', 'hold_not_found_creating_fallback', { orgId, holdId, sessionId, eventType: event.type });
         const gameId = md.gameId;
         const roomId = md.roomId;
         const startAt = md.startAt;
@@ -167,7 +168,7 @@ export async function POST(req: Request) {
         const customerPhone = md.customerPhone || '';
 
         if (!gameId || !roomId || !startAt || !endAt) {
-          console.error(`[stripe/webhook] Cannot create fallback booking — missing metadata fields. sessionId=${sessionId}`);
+          log.error('stripe.webhook', 'fallback_missing_metadata', { sessionId, gameId, roomId, startAt, endAt });
           return NextResponse.json({ ok: false, error: 'missing_metadata_for_fallback', type: event.type }, { status: 500 });
         }
 
@@ -209,10 +210,10 @@ export async function POST(req: Request) {
 
         try {
           await db.putBooking(orgId, fallbackBooking as any);
-          console.error(`[stripe/webhook] Fallback booking created: ${bookingId}`);
+          log.info('stripe.webhook', 'fallback_booking_created', { bookingId, orgId, holdId, sessionId });
           return NextResponse.json({ ok: true, received: true, type: event.type, confirmed: true, fallback: true });
         } catch (fallbackErr) {
-          console.error(`[stripe/webhook] Fallback booking creation failed:`, fallbackErr);
+          logError('stripe.webhook', 'fallback_booking_failed', fallbackErr, { bookingId, orgId, holdId, sessionId });
           return NextResponse.json({ ok: false, error: 'fallback_booking_failed', type: event.type }, { status: 500 });
         }
       }
@@ -269,7 +270,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true, received: true, type: event.type, confirmed: true });
     }
   } catch (err) {
-    console.error('[stripe/webhook] Error processing event:', event.type, event.id, err instanceof Error ? err.stack : err);
+    logError('stripe.webhook', 'processing_error', err, { eventType: event.type, eventId: event.id });
     // Return 500 so Stripe retries (up to 3 days). The idempotency guard (claimStripeEvent)
     // will prevent duplicate processing on retry — delete the claim so retry can proceed.
     try {

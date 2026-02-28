@@ -202,6 +202,25 @@ export function createMemoryDb(): Db {
     async createGiftCardTransaction() {
       throw new Error('Gift cards not implemented in memory mode');
     },
+    
+    // Hold cleanup
+    async expireStaleHolds() {
+      const s = getStore();
+      const nowIso = new Date().toISOString();
+      let count = 0;
+      for (const h of s.holds) {
+        if (h.status === 'active' && h.expiresAt < nowIso) {
+          h.status = 'expired';
+          count++;
+        }
+      }
+      return count;
+    },
+    async countActiveHolds() {
+      const s = getStore();
+      const nowIso = new Date().toISOString();
+      return s.holds.filter((h) => h.status === 'active' && h.expiresAt >= nowIso).length;
+    },
   } satisfies Db;
 }
 

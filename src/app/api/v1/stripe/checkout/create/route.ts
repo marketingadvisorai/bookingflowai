@@ -10,6 +10,7 @@ import { calcDepositCents } from '@/lib/stripe/money';
 import { getClientIp, rateLimit } from '@/lib/http/rate-limit';
 import { addRateLimitHeaders } from '@/lib/http/errors';
 import { explainError } from '@/lib/error-explainer';
+import { logError, log } from '@/lib/logging';
 
 const bodySchema = z.object({
   orgId: z.string().min(1),
@@ -79,7 +80,7 @@ export async function POST(req: Request) {
     hold = await db.getHold(orgId, holdId);
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'unknown_error';
-    console.error('[stripe/checkout/create] Database error fetching org/hold:', msg, { orgId, holdId });
+    logError('stripe.checkout', 'db_fetch_failed', err, { orgId, holdId, endpoint: '/api/v1/stripe/checkout/create' });
     
     if (msg.includes('TimeoutError') || msg.includes('NetworkingError')) {
       return NextResponse.json(
@@ -123,8 +124,11 @@ export async function POST(req: Request) {
       await db.extendHoldTTL(orgId, hold.holdId, extendedExpiresAt);
     } catch (err: unknown) {
       // Non-critical — log but continue with checkout
-      const msg = err instanceof Error ? err.message : 'unknown_error';
-      console.warn('[stripe/checkout/create] Failed to extend hold TTL (non-critical):', msg, { orgId, holdId });
+      log.warn('stripe.checkout', 'ttl_extend_failed', { 
+        orgId, 
+        holdId, 
+        error: err instanceof Error ? err.message : 'unknown_error',
+      });
     }
   }
 
@@ -229,7 +233,7 @@ export async function POST(req: Request) {
   });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'unknown_error';
-    console.error('[stripe/checkout/create] Stripe API error:', msg, { orgId, holdId });
+    logError('stripe.checkout', 'session_create_failed', err, { orgId, holdId, endpoint: '/api/v1/stripe/checkout/create' });
     
     // Parse Stripe-specific errors
     if (msg.includes('No such account') || msg.includes('invalid account')) {

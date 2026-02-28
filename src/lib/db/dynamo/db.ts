@@ -614,5 +614,56 @@ export function createDynamoDb(): Db {
     async createGiftCardTransaction() {
       throw new Error('Gift cards not supported in DynamoDB mode');
     },
+    
+    // Hold cleanup - uses DynamoDB scan with filter
+    async expireStaleHolds(): Promise<number> {
+      const nowIso = new Date().toISOString();
+      // DynamoDB: scan for active holds with expired timestamps
+      // This is expensive but holds table is typically small
+      const { Items } = await ddb.send(new ScanCommand({
+        TableName: env.holdsTable,
+        FilterExpression: '#status = :active AND expires_at < :now',
+        ExpressionAttributeNames: { '#status': 'status' },
+        ExpressionAttributeValues: {
+          ':active': 'active',
+          ':now': nowIso,
+        },
+      }));
+      
+      if (!Items || Items.length === 0) return 0;
+      
+      // Update each expired hold
+      let count = 0;
+      for (const item of Items) {
+        const itemPk = item.pk as string | undefined;
+        const itemSk = item.sk as string | undefined;
+        if (!itemPk || !itemSk) continue;
+        
+        await ddb.send(new UpdateCommand({
+          TableName: env.holdsTable,
+          Key: { pk: itemPk, sk: itemSk },
+          UpdateExpression: 'SET #status = :expired',
+          ExpressionAttributeNames: { '#status': 'status' },
+          ExpressionAttributeValues: { ':expired': 'expired' },
+        }));
+        count++;
+      }
+      return count;
+    },
+    
+    async countActiveHolds(): Promise<number> {
+      const nowIso = new Date().toISOString();
+      const { Count } = await ddb.send(new ScanCommand({
+        TableName: env.holdsTable,
+        FilterExpression: '#status = :active AND expires_at >= :now',
+        ExpressionAttributeNames: { '#status': 'status' },
+        ExpressionAttributeValues: {
+          ':active': 'active',
+          ':now': nowIso,
+        },
+        Select: 'COUNT',
+      }));
+      return Count ?? 0;
+    },
   } satisfies Db;
 }

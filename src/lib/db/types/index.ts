@@ -70,4 +70,8 @@ export type Db = {
   scanAllUsers(): Promise<User[]>;
   scanAllOrgs(): Promise<Org[]>;
   countAllBookings(): Promise<number>;
+  
+  // hold cleanup (cron)
+  expireStaleHolds(): Promise<number>;
+  countActiveHolds(): Promise<number>;
 };

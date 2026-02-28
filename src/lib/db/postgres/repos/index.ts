@@ -83,5 +83,9 @@ export function createRepos(db: DrizzleDb): Db {
     // gift card transactions
     listGiftCardTransactions: giftCardTransactionRepo.list,
     createGiftCardTransaction: giftCardTransactionRepo.create,
+    
+    // hold cleanup
+    expireStaleHolds: bookingRepo.expireStaleHolds,
+    countActiveHolds: bookingRepo.countActiveHolds,
   };
 }
