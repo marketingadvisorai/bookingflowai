@@ -17,19 +17,21 @@ export function middleware(req: NextRequest) {
   }
 
   /* ── Marketing domain: redirect auth/dashboard routes to dash.bookingflowai.com ── */
-  const forwardedHost = req.headers.get('x-forwarded-host') || '';
-  const effectiveHost = forwardedHost || hostname;
-  const isMarketingDomain = effectiveHost.replace(/:\d+$/, '') === 'bookingflowai.com' || effectiveHost.replace(/:\d+$/, '') === 'www.bookingflowai.com';
-  if (isMarketingDomain && (
-    pathname.startsWith('/login') ||
-    pathname.startsWith('/signup') ||
-    pathname.startsWith('/dashboard') ||
-    pathname.startsWith('/onboarding') ||
-    pathname.startsWith('/forgot-password') ||
-    pathname.startsWith('/reset-password') ||
-    pathname.startsWith('/api/dashboard')
-  )) {
-    return NextResponse.redirect(new URL(pathname + req.nextUrl.search, 'https://dash.bookingflowai.com'));
+  const effectiveHost = (req.headers.get('x-forwarded-host') || req.headers.get('host') || req.nextUrl.host || '').replace(/:\d+$/, '').toLowerCase();
+  const isMarketingDomain = effectiveHost === 'bookingflowai.com' || effectiveHost === 'www.bookingflowai.com';
+  const authRoutes = pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname.startsWith('/dashboard') || pathname.startsWith('/onboarding') || pathname.startsWith('/forgot-password') || pathname.startsWith('/reset-password') || pathname.startsWith('/api/dashboard');
+  
+  if (isMarketingDomain && authRoutes) {
+    const target = `https://dash.bookingflowai.com${pathname}${req.nextUrl.search}`;
+    return NextResponse.redirect(target);
+  }
+  
+  // Debug header (remove after confirming)
+  if (authRoutes) {
+    const res = NextResponse.next();
+    res.headers.set('x-debug-host', effectiveHost);
+    res.headers.set('x-debug-marketing', String(isMarketingDomain));
+    return res;
   }
 
   /* ── Domain-based routing: escapeboost.com → /escapeboost/* ── */
@@ -56,5 +58,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/dashboard/:path*', '/api/dashboard/:path*', '/escapeboost/:path*', '/features', '/pricing', '/blog/:path*', '/about', '/contact', '/login', '/signup', '/forgot-password', '/reset-password', '/onboarding', '/widget/:path*', '/book/:path*', '/embed/:path*', '/standalone/:path*', '/gift-cards/:path*'],
+  matcher: ['/((?!_next/static|_next/image|favicon\\.png|images|robots\\.txt|sitemap\\.xml).*)'],
 };
