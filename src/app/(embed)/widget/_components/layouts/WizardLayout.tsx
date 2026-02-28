@@ -190,7 +190,7 @@ export function WizardLayout({
 
   /* ── auto-load availability when on step 3 ── */
   useEffect(() => {
-    if (step < 3) return;
+    if (step !== 3) return;
     let cancelled = false;
     const t = setTimeout(() => {
       if (!cancelled) void loadAvailability();
@@ -344,6 +344,7 @@ export function WizardLayout({
       if (!res.ok) {
         const err =
           typeof body === 'object' && body && 'error' in body ? String((body as { error?: unknown }).error) : null;
+        console.error('[BF] Hold error:', res.status, JSON.stringify(body));
         setSelected(null);
         setError(friendlyError(err ?? 'Failed to reserve this time'));
         emitBFEvent('hold_error', { orgId, gameId, error: err ?? 'failed' });
@@ -355,6 +356,8 @@ export function WizardLayout({
         typeof hold === 'object' && hold && 'holdId' in hold ? String((hold as { holdId?: unknown }).holdId) : null;
       const expiresAt =
         typeof hold === 'object' && hold && 'expiresAt' in hold ? String((hold as { expiresAt?: unknown }).expiresAt) : null;
+
+      console.log('[BF] Hold response:', JSON.stringify(body), 'holdId:', nextHoldId, 'expiresAt:', expiresAt);
 
       setHoldId(nextHoldId);
       setHoldExpiresAt(expiresAt);
