@@ -40,7 +40,7 @@ export default async function WidgetPage({
   }
 
   return (
-    <div className={`min-h-screen bg-liquid-radial overflow-hidden${theme === 'dark' ? ' dark' : ''}`}>
+    <div className={`min-h-screen bg-liquid-radial overflow-x-hidden${theme === 'dark' ? ' dark' : ''}`}>
       <div className="mx-auto max-w-5xl px-4 py-6">
         <LayoutSwitcher
           layout={layout}

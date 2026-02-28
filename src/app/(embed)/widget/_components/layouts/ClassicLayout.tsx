@@ -335,7 +335,7 @@ export function ClassicLayout({
       // Auto-scroll to slots section only when user explicitly requested
       if (shouldScroll) {
         setTimeout(() => {
-          slotsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          slotsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }, 100);
       }
     } finally {
@@ -558,7 +558,7 @@ export function ClassicLayout({
     >
       <div
         ref={scrollRef}
-        className="relative w-full max-w-full overflow-x-hidden overflow-y-auto overscroll-contain rounded-[var(--widget-radius)] p-4 pb-8 pb-[calc(2rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(2rem+env(safe-area-inset-bottom))] bg-white shadow-xl border border-gray-100 dark:border-white/[0.06] dark:bg-[#111113] dark:shadow-none"
+        className="relative w-full max-w-full overflow-x-hidden rounded-[var(--widget-radius)] p-4 pb-8 pb-[calc(2rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(2rem+env(safe-area-inset-bottom))] bg-white shadow-xl border border-gray-100 dark:border-white/[0.06] dark:bg-[#111113] dark:shadow-none"
       >
         <WidgetBackground />
 

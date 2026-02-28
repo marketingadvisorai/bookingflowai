@@ -8,6 +8,7 @@ const ALLOWED_TYPES: Record<string, string> = {
   'image/jpeg': 'jpg',
   'image/png': 'png',
   'image/webp': 'webp',
+  'image/avif': 'avif',
 };
 
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
@@ -59,6 +60,7 @@ export function getContentType(filename: string): string {
     jpeg: 'image/jpeg',
     png: 'image/png',
     webp: 'image/webp',
+    avif: 'image/avif',
   };
   return map[ext] || 'application/octet-stream';
 }

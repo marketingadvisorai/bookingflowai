@@ -70,6 +70,7 @@
   /* Smooth scroll */
   html {
     scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
   }
   
   /* Selection color */
@@ -386,6 +387,12 @@
   background: radial-gradient(ellipse at 50% 0%, rgba(255, 79, 0, 0.10) 0%, transparent 60%),
               radial-gradient(ellipse at 80% 50%, rgba(255, 79, 0, 0.05) 0%, transparent 50%),
               #0a0a0a;
+}
+
+/* Promote bg-liquid-radial to its own layer to avoid repaints during scroll */
+.bg-liquid-radial {
+  will-change: auto;
+  backface-visibility: hidden;
 }
 
 /* Blog prose styles */

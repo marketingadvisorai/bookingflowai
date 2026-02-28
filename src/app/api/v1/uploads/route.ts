@@ -2,8 +2,22 @@ import { NextRequest, NextResponse } from 'next/server';
 import { uploadFile } from '@/lib/storage';
 import { requireSession } from '@/lib/auth/require-session';
 
-const ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
+const ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/avif']);
 const MAX_SIZE = 5 * 1024 * 1024;
+
+async function optimizeImage(buffer: Buffer): Promise<{ optimized: Buffer; contentType: string; ext: string }> {
+  try {
+    const sharp = (await import('sharp')).default;
+    const optimized = await sharp(buffer)
+      .resize(1920, null, { withoutEnlargement: true })
+      .webp({ quality: 80 })
+      .toBuffer();
+    return { optimized, contentType: 'image/webp', ext: 'webp' };
+  } catch (err) {
+    console.warn('sharp optimization failed, saving original:', err);
+    return { optimized: buffer, contentType: 'image/webp', ext: 'webp' };
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,7 +35,7 @@ export async function POST(req: NextRequest) {
 
     if (!ALLOWED_TYPES.has(file.type)) {
       return NextResponse.json(
-        { error: 'Invalid file type. Only jpg, png, webp allowed.' },
+        { error: 'Invalid file type. Only jpg, png, webp, avif allowed.' },
         { status: 400 },
       );
     }
@@ -33,14 +47,19 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const url = await uploadFile(buffer, file.name, file.type);
+    const originalBuffer = Buffer.from(await file.arrayBuffer());
+    const originalSize = originalBuffer.length;
 
-    return NextResponse.json({ url });
+    const { optimized, contentType } = await optimizeImage(originalBuffer);
+    const optimizedName = file.name.replace(/\.[a-z0-9]+$/i, '') + '.webp';
+    const url = await uploadFile(optimized, optimizedName, contentType);
+
+    return NextResponse.json({ url, originalSize, optimizedSize: optimized.length });
   } catch (err) {
     console.error('Upload error:', err);
+    const msg = err instanceof Error ? err.message : 'Upload failed';
     return NextResponse.json(
-      { error: 'Upload failed' },
+      { error: `Upload failed: ${msg}` },
       { status: 500 },
     );
   }

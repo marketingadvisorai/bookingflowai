@@ -7,32 +7,10 @@ import { getStripeClient } from '@/lib/stripe/client';
 import { getDb } from '@/lib/db';
 import { confirmHoldToBooking } from '@/lib/booking/confirm-hold';
 import { calcDepositCents } from '@/lib/stripe/money';
-import { createDynamoDocClient } from '@/lib/db/dynamo/client';
-import { getDynamoEnv } from '@/lib/db/dynamo/env';
-import { DeleteCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { claimStripeEvent, releaseStripeEvent } from '@/lib/stripe/idempotency';
 
 function nowIso() {
   return new Date().toISOString();
-}
-
-async function claimStripeEvent(eventId: string) {
-  const ddb = createDynamoDocClient();
-  const env = getDynamoEnv();
-  try {
-    await ddb.send(
-      new PutCommand({
-        TableName: env.bookingsTable,
-        Item: { pk: 'STRIPE_EVENT', sk: eventId, data: { eventId, createdAt: nowIso() } },
-        ConditionExpression: 'attribute_not_exists(pk) AND attribute_not_exists(sk)',
-      })
-    );
-    return true;
-  } catch (e) {
-    const name = e instanceof Error ? e.name : '';
-    if (name === 'ConditionalCheckFailedException') return false;
-    // If anything else goes wrong, fail open but don't break webhooks.
-    return true;
-  }
 }
 
 export async function POST(req: Request) {
@@ -114,6 +92,42 @@ export async function POST(req: Request) {
 
       const md = (session.metadata ?? {}) as Record<string, string>;
       const orgId = md.orgId;
+
+      // --- Gift card purchase handling ---
+      if (md.type === 'gift_card_purchase' && md.giftCardId) {
+        if (event.type === 'checkout.session.async_payment_failed') {
+          // Mark gift card as cancelled on payment failure.
+          try {
+            const db = getDb();
+            await db.updateGiftCardStatus(md.giftCardId, 'cancelled');
+          } catch { /* best effort */ }
+          return NextResponse.json({ ok: true, received: true, type: event.type, giftCard: 'cancelled' });
+        }
+        if (session.payment_status === 'paid') {
+          try {
+            const db = getDb();
+            const piId = typeof session.payment_intent === 'string'
+              ? session.payment_intent
+              : session.payment_intent && typeof session.payment_intent === 'object' && 'id' in session.payment_intent
+                ? String((session.payment_intent as Stripe.PaymentIntent).id)
+                : undefined;
+            // Update gift card with payment intent ID — confirms payment completed.
+            if (piId) {
+              const { createDrizzle } = await import('@/lib/db/postgres/client');
+              const drizzle = createDrizzle();
+              const { sql } = await import('drizzle-orm');
+              await drizzle.execute(
+                sql`UPDATE gift_cards SET stripe_payment_intent_id = ${piId}, updated_at = ${nowIso()} WHERE id = ${md.giftCardId}`
+              );
+            }
+            console.log(`[stripe/webhook] Gift card payment confirmed: ${md.giftCardId}`);
+          } catch (e) {
+            console.error('[stripe/webhook] Gift card update error:', e instanceof Error ? e.message : e);
+          }
+        }
+        return NextResponse.json({ ok: true, received: true, type: event.type, giftCard: 'processed' });
+      }
+
       const holdId = md.holdId;
       const paymentMode = md.paymentMode === 'deposit' ? 'deposit' : 'full';
       const depositPercent = Number(md.depositPercent ?? '50');
@@ -259,14 +273,7 @@ export async function POST(req: Request) {
     // Return 500 so Stripe retries (up to 3 days). The idempotency guard (claimStripeEvent)
     // will prevent duplicate processing on retry — delete the claim so retry can proceed.
     try {
-      const ddbRetry = createDynamoDocClient();
-      const envRetry = getDynamoEnv();
-      await ddbRetry.send(
-        new DeleteCommand({
-          TableName: envRetry.bookingsTable,
-          Key: { pk: 'STRIPE_EVENT', sk: event.id },
-        })
-      );
+      await releaseStripeEvent(event.id);
     } catch { /* best effort */ }
     return NextResponse.json({ ok: false, error: 'processing_error', type: event.type }, { status: 500 });
   }

@@ -361,13 +361,8 @@ export function BookingWidgetDemo({
       emitBFEvent('hold_created', { orgId, gameId, holdId: nextHoldId, expiresAt });
 
       // UX: after selecting a slot, gently nudge toward customer section.
-      // Don't force scroll — let the user scroll freely at any time.
       setTimeout(() => {
-        try {
-          customerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        } catch {
-          // ignore
-        }
+        customerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }, 50);
     } finally {
       setLoading(false);
@@ -643,7 +638,7 @@ export function BookingWidgetDemo({
     >
       <div
         ref={scrollRef}
-        className="relative w-full max-w-full overflow-x-hidden overflow-y-auto overscroll-contain rounded-[var(--widget-radius)] p-4 pb-8 pb-[calc(2rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(2rem+env(safe-area-inset-bottom))] bg-white shadow-xl border border-gray-100 dark:border-white/[0.06] dark:bg-[#111113] dark:shadow-none"
+        className="relative w-full max-w-full overflow-x-hidden rounded-[var(--widget-radius)] p-4 pb-8 pb-[calc(2rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-[calc(2rem+env(safe-area-inset-bottom))] bg-white shadow-xl border border-gray-100 dark:border-white/[0.06] dark:bg-[#111113] dark:shadow-none"
       >
         <WidgetBackground />
 

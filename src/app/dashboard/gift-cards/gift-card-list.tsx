@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import { GiftCardPreviewCard } from './gift-card-preview';
 
 type GiftCard = {
   id: string;
@@ -11,8 +12,10 @@ type GiftCard = {
   currency: string;
   status: string;
   purchaserEmail?: string;
+  purchaserName?: string;
   recipientName?: string;
   recipientEmail?: string;
+  personalMessage?: string;
   createdAt: string;
 };
 
@@ -29,16 +32,19 @@ type Transaction = {
 type Props = {
   cards: GiftCard[];
   formatAmount: (cents: number, currency?: string) => string;
+  orgName?: string;
 };
 
 const statusColor = (s: string) => {
   if (s === 'active') return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border-emerald-500/30';
   if (s === 'redeemed') return 'bg-orange-500/10 text-orange-600 dark:text-orange-300 border-orange-500/30';
+  if (s === 'cancelled') return 'bg-red-500/10 text-red-600 dark:text-red-300 border-red-500/30';
   return 'bg-muted text-muted-foreground border-border';
 };
 
-export function GiftCardList({ cards, formatAmount }: Props) {
+export function GiftCardList({ cards, formatAmount, orgName }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [previewId, setPreviewId] = useState<string | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [txLoading, setTxLoading] = useState(false);
 
@@ -64,62 +70,102 @@ export function GiftCardList({ cards, formatAmount }: Props) {
     );
   }
 
+  const previewCard = previewId ? cards.find((c) => c.id === previewId) : null;
+
   return (
-    <div className="space-y-3">
-      {cards
-        .slice()
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-        .map((gc) => (
-          <div key={gc.id}>
+    <>
+      <div className="space-y-3">
+        {cards
+          .slice()
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .map((gc) => (
+            <div key={gc.id}>
+              <div className="flex items-stretch gap-2">
+                <button
+                  type="button"
+                  onClick={() => loadTransactions(gc.id)}
+                  className="flex-1 text-left rounded-lg border border-border bg-card p-4 hover:bg-foreground/[0.02] transition-colors"
+                >
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="space-y-1">
+                      <div className="text-sm font-mono font-semibold tracking-wide">{gc.code}</div>
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                        <span>Value: {formatAmount(gc.initialAmountCents, gc.currency)}</span>
+                        <span>Balance: {formatAmount(gc.remainingAmountCents, gc.currency)}</span>
+                        <span>{new Date(gc.createdAt).toLocaleDateString()}</span>
+                        {gc.recipientName && <span>To: {gc.recipientName}</span>}
+                        {gc.recipientEmail && <span>{gc.recipientEmail}</span>}
+                      </div>
+                    </div>
+                    <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium capitalize w-fit ${statusColor(gc.status)}`}>
+                      {gc.status}
+                    </span>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewId(previewId === gc.id ? null : gc.id)}
+                  className="flex items-center justify-center rounded-lg border border-border bg-card px-3 hover:bg-foreground/[0.02] transition-colors"
+                  title="Preview gift card"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+
+              {selectedId === gc.id && (
+                <div className="ml-4 mt-2 rounded-lg border border-border bg-muted/30 p-3">
+                  <div className="text-xs font-medium text-muted-foreground mb-2">Transaction History</div>
+                  {txLoading ? (
+                    <p className="text-xs text-muted-foreground">Loading…</p>
+                  ) : transactions.length === 0 ? (
+                    <p className="text-xs text-muted-foreground">No transactions yet</p>
+                  ) : (
+                    <div className="space-y-1">
+                      {transactions.map((tx) => (
+                        <div key={tx.id} className="flex items-center justify-between text-xs">
+                          <div className="text-muted-foreground">
+                            {tx.type} {tx.bookingId && `• ${tx.bookingId.slice(0, 8)}…`}
+                            {tx.note && ` • ${tx.note}`}
+                          </div>
+                          <div className="font-mono">
+                            {tx.amountCents < 0 ? '-' : '+'}
+                            {formatAmount(Math.abs(tx.amountCents))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+      </div>
+
+      {/* Preview overlay */}
+      {previewCard && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setPreviewId(null)}>
+          <div className="w-full max-w-md mx-4" onClick={(e) => e.stopPropagation()}>
+            <GiftCardPreviewCard
+              amountCents={previewCard.initialAmountCents}
+              recipientName={previewCard.recipientName}
+              purchaserName={previewCard.purchaserName}
+              venueName={orgName}
+              code={previewCard.code}
+              personalMessage={previewCard.personalMessage}
+            />
             <button
               type="button"
-              onClick={() => loadTransactions(gc.id)}
-              className="w-full text-left rounded-lg border border-border bg-card p-4 hover:bg-foreground/[0.02] transition-colors"
+              onClick={() => setPreviewId(null)}
+              className="mt-4 w-full rounded-xl bg-white/10 py-3 text-sm font-medium text-white hover:bg-white/20 transition-colors"
             >
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div className="space-y-1">
-                  <div className="text-sm font-mono font-semibold tracking-wide">{gc.code}</div>
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                    <span>Value: {formatAmount(gc.initialAmountCents, gc.currency)}</span>
-                    <span>Balance: {formatAmount(gc.remainingAmountCents, gc.currency)}</span>
-                    <span>{new Date(gc.createdAt).toLocaleDateString()}</span>
-                    {gc.recipientName && <span>To: {gc.recipientName}</span>}
-                    {gc.recipientEmail && <span>{gc.recipientEmail}</span>}
-                  </div>
-                </div>
-                <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium capitalize w-fit ${statusColor(gc.status)}`}>
-                  {gc.status}
-                </span>
-              </div>
+              Close
             </button>
-
-            {selectedId === gc.id && (
-              <div className="ml-4 mt-2 rounded-lg border border-border bg-muted/30 p-3">
-                <div className="text-xs font-medium text-muted-foreground mb-2">Transaction History</div>
-                {txLoading ? (
-                  <p className="text-xs text-muted-foreground">Loading…</p>
-                ) : transactions.length === 0 ? (
-                  <p className="text-xs text-muted-foreground">No transactions yet</p>
-                ) : (
-                  <div className="space-y-1">
-                    {transactions.map((tx) => (
-                      <div key={tx.id} className="flex items-center justify-between text-xs">
-                        <div className="text-muted-foreground">
-                          {tx.type} {tx.bookingId && `• ${tx.bookingId.slice(0, 8)}…`}
-                          {tx.note && ` • ${tx.note}`}
-                        </div>
-                        <div className="font-mono">
-                          {tx.amountCents < 0 ? '-' : '+'}
-                          {formatAmount(Math.abs(tx.amountCents))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
           </div>
-        ))}
-    </div>
+        </div>
+      )}
+    </>
   );
 }

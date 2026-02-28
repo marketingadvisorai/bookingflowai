@@ -24,7 +24,7 @@ export function yyyyMmDdLocal(d: Date) {
 export function scrollToSection(sectionId: string, behavior: 'smooth' | 'instant' = 'smooth') {
   const element = document.getElementById(sectionId);
   if (element) {
-    element.scrollIntoView({ behavior, block: 'start' });
+    element.scrollIntoView({ behavior, block: 'nearest' });
   }
 }
 

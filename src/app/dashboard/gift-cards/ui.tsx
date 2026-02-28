@@ -2,9 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { GiftCardList } from './gift-card-list';
 import { IssueGiftCardForm } from './issue-gift-card-form';
 
@@ -16,8 +13,10 @@ type GiftCard = {
   currency: string;
   status: string;
   purchaserEmail?: string;
+  purchaserName?: string;
   recipientName?: string;
   recipientEmail?: string;
+  personalMessage?: string;
   createdAt: string;
 };
 
@@ -29,19 +28,25 @@ export function GiftCardsManager() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [giftCards, setGiftCards] = useState<GiftCard[]>([]);
+  const [orgName, setOrgName] = useState<string>('');
   const [showIssue, setShowIssue] = useState(false);
 
   async function load() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/dashboard/gift-cards', { cache: 'no-store' });
-      const body = await res.json().catch(() => null);
-      if (!res.ok || !body?.ok) {
-        setError(body?.error || 'Failed to load gift cards');
+      const [gcRes, orgRes] = await Promise.all([
+        fetch('/api/dashboard/gift-cards', { cache: 'no-store' }),
+        fetch('/api/dashboard/org', { cache: 'no-store' }),
+      ]);
+      const gcBody = await gcRes.json().catch(() => null);
+      const orgBody = await orgRes.json().catch(() => null);
+      if (!gcRes.ok || !gcBody?.ok) {
+        setError(gcBody?.error || 'Failed to load gift cards');
         return;
       }
-      setGiftCards(body.giftCards ?? []);
+      setGiftCards(gcBody.giftCards ?? []);
+      if (orgBody?.org?.name) setOrgName(orgBody.org.name);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -70,7 +75,7 @@ export function GiftCardsManager() {
         />
       )}
 
-      <GiftCardList cards={giftCards} formatAmount={formatAmount} />
+      <GiftCardList cards={giftCards} formatAmount={formatAmount} orgName={orgName} />
     </div>
   );
 }

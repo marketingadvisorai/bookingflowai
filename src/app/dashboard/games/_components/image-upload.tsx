@@ -3,6 +3,18 @@
 import { useCallback, useRef, useState } from 'react';
 import { fileToOptimizedImage } from '@/lib/assets/client-image';
 
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+const GUIDANCE: Record<string, string> = {
+  hero: 'Recommended: 1200×800px, JPG/PNG/WebP, max 5MB',
+  hero_thumb: 'Recommended: 400×300px, used as preview thumbnail',
+  gallery: 'Recommended: 1200×800px, max 3 images',
+};
+
 export function ImageUpload({
   orgId,
   gameId,
@@ -17,6 +29,7 @@ export function ImageUpload({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [sizeInfo, setSizeInfo] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -25,6 +38,7 @@ export function ImageUpload({
   const handleFile = useCallback(async (f: File) => {
     setError(null);
     setPreview(null);
+    setSizeInfo(null);
 
     if (!f.type.startsWith('image/')) {
       setError('Please select an image file.');
@@ -57,8 +71,17 @@ export function ImageUpload({
         const body = await res.json().catch(() => null);
         throw new Error((body as { error?: string })?.error || 'Upload failed');
       }
-      const { url: assetUrl } = (await res.json()) as { url: string };
+      const { url: assetUrl, originalSize, optimizedSize } = (await res.json()) as {
+        url: string;
+        originalSize?: number;
+        optimizedSize?: number;
+      };
       setPreview(assetUrl);
+      if (optimizedSize != null && originalSize != null && originalSize !== optimizedSize) {
+        setSizeInfo(`Uploaded: ${formatBytes(optimizedSize)} (optimized from ${formatBytes(originalSize)})`);
+      } else if (optimizedSize != null) {
+        setSizeInfo(`Uploaded: ${formatBytes(optimizedSize)}`);
+      }
       onUploaded(assetUrl);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload failed');
@@ -89,31 +112,46 @@ export function ImageUpload({
 
   if (preview) {
     return (
-      <div className="flex items-center gap-3">
-        <div className="relative h-16 w-24 overflow-hidden rounded-lg border border-gray-200">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={preview} alt="Uploaded" className="h-full w-full object-cover" />
+      <div className="grid gap-1">
+        <div className="flex items-center gap-3">
+          <div className="relative h-16 w-24 overflow-hidden rounded-lg border border-gray-200">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={preview} alt="Uploaded" className="h-full w-full object-cover" />
+          </div>
+          <div className="grid gap-0.5">
+            <button
+              type="button"
+              onClick={() => {
+                setPreview(null);
+                setSizeInfo(null);
+                inputRef.current?.click();
+              }}
+              className="text-xs font-medium text-[#FF4F00] hover:underline"
+            >
+              Replace
+            </button>
+            {sizeInfo && (
+              <span className="text-[10px] text-[#201515]/50">{sizeInfo}</span>
+            )}
+          </div>
         </div>
-        <button
-          type="button"
-          onClick={() => {
-            setPreview(null);
-            inputRef.current?.click();
-          }}
-          className="text-xs font-medium text-[#FF4F00] hover:underline"
-        >
-          Replace
-        </button>
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/avif"
+          onChange={onPick}
+          className="hidden"
+        />
       </div>
     );
   }
 
   return (
-    <div className="grid gap-2">
+    <div className="grid gap-1">
       <input
         ref={inputRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp"
+        accept="image/jpeg,image/png,image/webp,image/avif"
         onChange={onPick}
         className="hidden"
         disabled={pending}
@@ -137,7 +175,7 @@ export function ImageUpload({
         {pending ? (
           <>
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-[#FF4F00]" />
-            <span className="text-xs font-medium text-[#201515]">Uploading...</span>
+            <span className="text-xs font-medium text-[#201515]">Optimizing & uploading...</span>
           </>
         ) : (
           <>
@@ -150,11 +188,17 @@ export function ImageUpload({
               Drop {label} here or tap to browse
             </span>
             <span className="text-[10px] text-[#201515]/50">
-              Max 5 MB · JPG, PNG, or WebP
+              Max 5 MB · JPG, PNG, WebP, or AVIF
             </span>
           </>
         )}
       </button>
+
+      <p className="text-[10px] text-[#201515]/40">{GUIDANCE[kind]}</p>
+
+      {sizeInfo && (
+        <p className="text-[10px] font-medium text-emerald-600">{sizeInfo}</p>
+      )}
 
       {error && (
         <p className="text-xs font-medium text-red-500">{error}</p>

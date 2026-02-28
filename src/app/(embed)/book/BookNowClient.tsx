@@ -34,13 +34,10 @@ function BookNowInner({ orgId, themeParam }: { orgId: string; themeParam: string
 
   useEffect(() => {
     if (!activeGameId) return;
-    const scrollY = window.scrollY || 0;
-    Object.assign(document.documentElement.style, { overflowX: 'hidden' });
-    Object.assign(document.body.style, { overflowX: 'hidden', position: 'fixed', top: `-${scrollY}px`, left: '0', right: '0', width: '100vw' });
+    // Hide background scroll without position:fixed (which breaks modal scrolling)
+    document.body.style.overflow = 'hidden';
     return () => {
-      Object.assign(document.documentElement.style, { overflowX: '' });
-      Object.assign(document.body.style, { overflowX: '', position: '', top: '', left: '', right: '', width: '' });
-      window.scrollTo(0, scrollY);
+      document.body.style.overflow = '';
     };
   }, [activeGameId]);
 

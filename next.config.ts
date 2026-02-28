@@ -1,6 +1,4 @@
 import type { NextConfig } from "next";
-import path from "path";
-
 const securityHeaders = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
@@ -11,8 +9,6 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   output: 'standalone',
-  // Include monorepo root so Next.js traces & bundles deps from ../node_modules
-  outputFileTracingRoot: path.join(__dirname, '..'),
   images: {
     formats: ['image/avif', 'image/webp'],
   },

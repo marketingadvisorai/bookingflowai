@@ -72,12 +72,14 @@ export function EditGameDialog({ orgId, gameId, initial }: Props) {
         .filter(Boolean)
         .slice(0, 3);
 
+      const { galleryImageUrlsText: _unused, ...rest } = parsed.data;
       const res = await fetch(`/api/dashboard/games/${encodeURIComponent(gameId)}`, {
         method: 'PUT',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
-          ...parsed.data,
+          ...rest,
           heroImageUrl: parsed.data.heroImageUrl || undefined,
+          heroImageThumbUrl: parsed.data.heroImageThumbUrl || undefined,
           previewVideoUrl: parsed.data.previewVideoUrl || undefined,
           galleryImageUrls: galleryImageUrls.length ? galleryImageUrls : undefined,
           pricingModel: 'per_person',
