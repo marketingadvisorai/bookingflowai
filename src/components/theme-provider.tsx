@@ -1,0 +1,12 @@
+'use client';
+
+import * as React from 'react';
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
+
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  return React.createElement(
+    NextThemesProvider,
+    { attribute: 'class', defaultTheme: 'dark', enableSystem: true, disableTransitionOnChange: true },
+    children
+  );
+}

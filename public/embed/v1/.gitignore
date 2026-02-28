@@ -1,0 +1,4 @@
+# Built widget artifacts (published to CDN)
+widget.js
+widget.*.js
+widget.*.js.map

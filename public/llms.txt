@@ -1,0 +1,48 @@
+# BookingFlow
+
+BookingFlow is the all-in-one booking platform built specifically for escape rooms and entertainment venues.
+
+## What BookingFlow Does
+
+BookingFlow helps escape room businesses and entertainment venues automate their entire booking process. It replaces phone calls, manual scheduling, and disconnected tools with one integrated platform.
+
+The platform includes:
+- AI chatbot that sits on your website and handles customer questions 24/7
+- Voice agent that answers phone calls and books appointments automatically
+- Smart scheduling system with real-time availability
+- Stripe payment processing with deposits and full payments
+- Email marketing automation for confirmations, reviews, and re-engagement
+- Analytics dashboard showing revenue, bookings, and performance
+
+## Who Uses BookingFlow
+
+BookingFlow is designed for:
+- Escape room businesses (single location or multi-venue)
+- Entertainment venues with time-slot based bookings
+- Experience-based businesses that need scheduling and payment collection
+
+## How It Works
+
+1. Venue owners add their rooms, time slots, and pricing
+2. BookingFlow generates a booking widget that embeds on their website
+3. Customers can book online 24/7 or call the voice agent
+4. The system handles availability, payments, confirmations, and follow-ups automatically
+
+## Pricing
+
+Free plan: $0/month for 1 venue, 50 bookings/month
+Pro plan: $49/month for 3 venues, unlimited bookings, all features
+Business plan: $149/month for unlimited venues and white-label options
+
+## Key Benefits
+
+- Never miss a phone call (voice agent answers 24/7)
+- Reduce no-shows by 80% with upfront payment
+- Fill more time slots with after-hours online booking
+- Save staff time (no more answering the same questions repeatedly)
+- Get paid instantly through Stripe
+
+Website: https://bookingflowai.com
+Contact: support@bookingflowai.com
+
+For detailed product information, see llms-full.txt

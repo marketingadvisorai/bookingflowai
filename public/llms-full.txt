@@ -1,0 +1,220 @@
+# BookingFlow — Complete Product Information
+
+## Product Overview
+
+BookingFlow is a comprehensive booking automation platform designed specifically for escape rooms, entertainment venues, and experience-based businesses that operate on a time-slot reservation model.
+
+The platform was built to solve a specific problem: most escape rooms and small entertainment venues rely on phone calls, manual scheduling, and fragmented tools. This leads to missed bookings, high no-show rates, and staff time wasted answering repetitive questions.
+
+BookingFlow consolidates the entire booking workflow into one system:
+1. Customer discovers the venue online or calls
+2. BookingFlow handles inquiries through chatbot or voice agent
+3. Customer sees real-time availability and completes booking
+4. Payment is collected upfront via Stripe
+5. Automated emails handle confirmations, reminders, and follow-ups
+6. Venue staff focuses on delivering great experiences
+
+## Core Features
+
+### AI Chatbot
+- Sits on your website as an embeddable widget
+- Answers customer questions about rooms, pricing, policies, and availability
+- Guides customers through the booking process inside the chat interface
+- Available 24/7 without requiring staff
+- Fully customizable with your venue information
+- Works on desktop and mobile
+
+### Voice Agent
+- Answers incoming phone calls automatically
+- Sounds natural and handles conversational flow
+- Books appointments, checks availability, answers FAQs
+- Transfers to human staff for complex situations
+- Supports multiple languages
+- Logs and records all calls for review
+
+### Smart Scheduling
+- Real-time availability syncing across all booking channels
+- Custom time slots per room or experience
+- Buffer time between bookings for cleanup and setup
+- Staff scheduling and assignment
+- Multi-room support with independent calendars
+- Blackout date management
+- Recurring schedules with exceptions
+
+### Payment Processing
+- Direct Stripe integration (no middleman)
+- Collect deposits or full payment at booking
+- Automatic refund handling for cancellations
+- Support for gift cards and promotional codes
+- Payment confirmations via email and SMS
+- Revenue reporting and reconciliation
+
+### Email Marketing Automation
+- Post-booking confirmation emails (instant)
+- Pre-visit reminder emails (24 hours before)
+- Review request emails (1 hour after visit)
+- Birthday and anniversary campaigns
+- Re-engagement campaigns for lapsed customers
+- Customizable email templates
+- Analytics on open rates and conversions
+
+### Analytics Dashboard
+- Revenue tracking by room, day, and time slot
+- Booking conversion rates
+- Peak hours and days identification
+- Customer retention metrics
+- No-show and cancellation tracking
+- Average booking value and group size
+- Comparison reports (week-over-week, month-over-month)
+
+### Embeddable Booking Widget
+- One line of code to add to any website
+- Works on WordPress, Squarespace, Wix, Shopify, or custom sites
+- Fully responsive and mobile-optimized
+- Customizable colors and branding
+- Fast loading (no impact on page speed)
+- Accessibility compliant
+
+### Multi-Venue Management
+- Manage multiple locations from one dashboard
+- Per-venue settings, branding, and pricing
+- Cross-venue reporting and analytics
+- Role-based access controls for staff
+- White-label options for franchise operations
+
+## Use Cases
+
+### Escape Room Businesses
+- Primary use case
+- Typically 2-8 rooms per location
+- Need to manage overlapping time slots
+- High percentage of group bookings
+- Common questions about difficulty, theme, group size limits
+- Benefit most from chatbot (reduces repetitive phone calls) and online booking (captures after-hours demand)
+
+### Entertainment Venues
+- Laser tag, mini golf, virtual reality arcades, axe throwing, etc.
+- Similar time-slot booking model
+- Often have walk-in traffic but need online booking for groups
+- Voice agent handles incoming calls during busy periods
+
+### Team Building and Corporate Events
+- Escape rooms and entertainment venues offering corporate packages
+- Longer booking windows (planned weeks in advance)
+- Need custom pricing for large groups
+- Follow-up sequences important for repeat corporate clients
+
+## Technical Details
+
+### Integration
+- Stripe Connect for payment processing
+- Works with any website platform via JavaScript snippet
+- REST API available for custom integrations (Business plan)
+- Webhook support for real-time notifications
+- Zapier integration for connecting to other tools
+
+### Security
+- SOC 2 compliant
+- PCI DSS compliant for payment processing
+- Data encrypted in transit and at rest
+- GDPR and CCPA compliant
+- Regular security audits
+
+### Performance
+- 99.9% uptime SLA (Pro and Business plans)
+- Booking widget loads in under 500ms
+- Mobile-first responsive design
+- Works on all modern browsers
+
+## Pricing
+
+### Free Plan ($0/month)
+- 1 venue
+- 50 bookings per month
+- Basic booking widget
+- Email confirmations
+- Stripe payment processing
+- Email support
+
+### Pro Plan ($49/month)
+- 3 venues
+- Unlimited bookings
+- AI chatbot
+- Voice agent (500 minutes/month included)
+- Email marketing automation
+- Analytics dashboard
+- Custom branding
+- Priority support
+
+### Business Plan ($149/month)
+- Unlimited venues
+- Everything in Pro
+- API access
+- White-label options
+- Dedicated support
+- Custom integrations
+- Multi-venue reporting
+
+All plans include Stripe payment processing (Stripe's standard fees apply: 2.9% + 30¢ per transaction).
+
+## Common Questions
+
+**Q: How long does setup take?**
+A: Most venues are live in 10-15 minutes. You add your rooms, set your schedule, connect Stripe, and copy the widget code to your website.
+
+**Q: Do I need to replace my existing website?**
+A: No. BookingFlow is a booking layer that sits on top of your existing website. You add one snippet of code and the booking widget appears.
+
+**Q: What if someone wants to book a time slot that is not available?**
+A: The system shows only real-time available slots. If a slot is booked, it disappears from the calendar immediately. No overbooking is possible.
+
+**Q: Can customers book by phone?**
+A: Yes. The voice agent answers calls and can complete bookings over the phone. You can also transfer calls to staff if needed.
+
+**Q: What about no-shows?**
+A: Venues that collect full payment upfront see no-show rates under 5%. Those that do not charge upfront see 20-30% no-shows. BookingFlow supports both models, but recommends upfront payment.
+
+**Q: Can I still take walk-in customers?**
+A: Absolutely. BookingFlow manages your online and phone bookings. Walk-ins are handled the same way you currently handle them.
+
+**Q: What if I need help setting up?**
+A: Pro and Business plans include priority support. We also offer white-glove onboarding for a one-time fee.
+
+## Competitive Advantages
+
+vs. Generic booking systems (Calendly, Acuity):
+- Built specifically for time-slot venues
+- Voice agent for phone booking
+- Multi-room support
+- Better pricing for high-volume bookings
+
+vs. Escape room specific software (Aluvii, ERM):
+- AI chatbot and voice agent (they do not have this)
+- Modern, fast interface
+- Better mobile experience
+- More affordable for small venues
+
+vs. Building custom:
+- Faster to launch (10 minutes vs. months)
+- No developer needed
+- Ongoing updates and support included
+- Lower total cost of ownership
+
+## Company Information
+
+BookingFlow is a U.S.-based SaaS company founded in 2024. We focus exclusively on building the best booking platform for venues with time-slot based reservations.
+
+Our team has experience building and operating escape rooms, which informs every product decision. We understand the business model, the pain points, and what actually drives revenue for venue owners.
+
+Website: https://bookingflowai.com
+Blog: https://bookingflowai.com/blog
+Support: support@bookingflowai.com
+Twitter: @bookingflowai
+
+## Resources
+
+Marketing Guide for Escape Rooms: https://bookingflowai.com/blog/complete-guide-escape-room-marketing-2025
+How AI Chatbots Transform Venues: https://bookingflowai.com/blog/ai-chatbots-transform-venue-customer-service
+Online Booking Increases Revenue: https://bookingflowai.com/blog/online-booking-increases-revenue-escape-rooms
+Voice Agents for Booking: https://bookingflowai.com/blog/voice-agents-future-venue-booking
+Setup Guide: https://bookingflowai.com/blog/setting-up-first-online-booking-system
