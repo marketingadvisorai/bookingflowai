@@ -131,6 +131,14 @@ export const giftCards = pgTable('gift_cards', {
   index('gift_cards_org_idx').on(t.orgId),
 ]);
 
+export const passwordResets = pgTable('password_resets', {
+  tokenHash: t('token_hash').primaryKey(),
+  userId: t('user_id').notNull(),
+  email: t('email').notNull(),
+  expiresAt: t('expires_at').notNull(),
+  createdAt: t('created_at').notNull(),
+});
+
 export const giftCardTransactions = pgTable('gift_card_transactions', {
   id: t('id').primaryKey(),
   giftCardId: t('gift_card_id').notNull(),

@@ -562,7 +562,7 @@ export function WizardLayout({
               {/* Progress bar */}
               <div className="relative h-1 bg-gray-200 dark:bg-white/[0.06] rounded-full overflow-hidden mb-4">
                 <div 
-                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-[var(--widget-primary)] to-emerald-500 rounded-full transition-all duration-700 ease-out"
+                  className="absolute inset-y-0 left-0 bg-[var(--widget-primary)] rounded-full transition-all duration-700 ease-out"
                   style={{ width: `${(step / 4) * 100}%` }}
                 />
               </div>
@@ -585,7 +585,7 @@ export function WizardLayout({
                           isActive
                             ? 'bg-[var(--widget-primary)] text-white shadow-lg shadow-[var(--widget-primary)]/30'
                             : isDone
-                              ? 'bg-emerald-500 text-white'
+                              ? 'bg-[var(--widget-primary)] text-white opacity-70'
                               : 'bg-gray-200 dark:bg-white/10 text-gray-500 dark:text-white/50'
                         }`}
                       >

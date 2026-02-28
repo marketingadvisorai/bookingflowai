@@ -4,6 +4,18 @@ export function middleware(req: NextRequest) {
   const hostname = req.headers.get('host') || '';
   const { pathname } = req.nextUrl;
 
+  /* ── Embed routes: skip ALL middleware processing ── */
+  /* Widget, book, embed, standalone pages are public — no auth, no session leakage */
+  if (
+    pathname.startsWith('/widget') ||
+    pathname.startsWith('/book') ||
+    pathname.startsWith('/embed') ||
+    pathname.startsWith('/standalone') ||
+    pathname.startsWith('/gift-cards')
+  ) {
+    return NextResponse.next();
+  }
+
   /* ── Domain-based routing: escapeboost.com → /escapeboost/* ── */
   if (hostname === 'escapeboost.com' || hostname === 'www.escapeboost.com') {
     if (!pathname.startsWith('/escapeboost') && !pathname.startsWith('/_next') && !pathname.startsWith('/api')) {
@@ -13,7 +25,7 @@ export function middleware(req: NextRequest) {
     }
   }
 
-  /* ── Session cookie → header passthrough for SSR ── */
+  /* ── Session cookie → header passthrough for SSR (dashboard only) ── */
   const token = req.cookies.get('bf_session')?.value;
   if (!token) return NextResponse.next();
 
@@ -28,5 +40,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/dashboard/:path*', '/api/dashboard/:path*', '/escapeboost/:path*', '/features', '/pricing', '/blog/:path*', '/about', '/contact', '/login', '/signup', '/forgot-password', '/reset-password', '/onboarding', '/widget', '/book', '/embed/:path*', '/standalone/:path*'],
+  matcher: ['/', '/dashboard/:path*', '/api/dashboard/:path*', '/escapeboost/:path*', '/features', '/pricing', '/blog/:path*', '/about', '/contact', '/login', '/signup', '/forgot-password', '/reset-password', '/onboarding', '/widget/:path*', '/book/:path*', '/embed/:path*', '/standalone/:path*', '/gift-cards/:path*'],
 };

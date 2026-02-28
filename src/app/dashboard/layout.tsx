@@ -114,7 +114,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
                 'use server';
 
                 // Use the API logout route (which we verified works) instead of
-                // directly touching DynamoDB here. This avoids Amplify SSR
+                // directly checking the session here. This avoids SSR
                 // edge cases that were causing logout to error in the UI.
                 const { cookies, headers } = await import('next/headers');
                 const c = await cookies();

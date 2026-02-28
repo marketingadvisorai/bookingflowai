@@ -1,7 +1,7 @@
 import type { Booking, Game, Hold, Org, Room, Schedule } from './types';
 
 // NOTE: Step-2 MVP uses an in-memory store. In AWS-only deployment,
-// these map to DynamoDB tables + TTL for holds.
+// these map to database tables + TTL for holds.
 
 import type { Session, User } from '@/lib/auth/types';
 

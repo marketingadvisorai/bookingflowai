@@ -3,11 +3,11 @@ import { getDb } from '@/lib/db';
 
 /**
  * Base64 image upload fallback for when S3 presigned URLs aren't available.
- * Stores image data URL directly on the game record in DynamoDB.
- * Limited to ~400KB images (DynamoDB 400KB item limit).
+ * Stores image data URL directly on the game record.
+ * Limited to ~400KB images (file size limit).
  */
 
-const MAX_BYTES = 400 * 1024; // 400KB DynamoDB limit safety margin
+const MAX_BYTES = 400 * 1024; // 400KB database limit safety margin
 
 export async function POST(req: NextRequest) {
   try {

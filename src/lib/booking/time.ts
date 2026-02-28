@@ -1,6 +1,6 @@
 /**
  * Convert Date to ISO 8601 string (UTC timezone).
- * Used for consistent storage in DynamoDB.
+ * Used for consistent storage in database.
  */
 export function toIso(date: Date) {
   return date.toISOString();

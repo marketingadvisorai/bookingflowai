@@ -8,10 +8,7 @@ export function useThemeToggle(themeParam: string | null) {
 
   const [themeOverride, setThemeOverride] = useState<'light' | 'dark' | null>(initialOverride);
 
-  const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>(() => {
-    if (typeof window === 'undefined') return 'light';
-    return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  });
+  const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>('light');
 
   const theme: 'light' | 'dark' = themeOverride ?? systemTheme;
 

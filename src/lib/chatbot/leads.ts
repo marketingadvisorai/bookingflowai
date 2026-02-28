@@ -27,16 +27,16 @@ export function stripLeadComment(content: string): string {
   return content.replace(LEAD_PATTERN, '').trim();
 }
 
-/** Store lead (logs for now, DynamoDB later) */
+/** Store lead (logs for now, database later) */
 export async function storeLead(lead: Lead, sessionId: string): Promise<void> {
-  // For now, structured log — easy to grep and pipe to DynamoDB later
+  // For now, structured log — easy to grep and pipe to database later
   console.error('[lead]', JSON.stringify({
     ...lead,
     sessionId,
     timestamp: new Date().toISOString(),
   }));
 
-  // TODO: Write to bf_leads DynamoDB table when ready
+  // TODO: Write to bf_leads database table when ready
   // const db = getDb();
   // await db.putLead({ id: `lead_${Date.now()}`, ...lead, sessionId, createdAt: Date.now() });
 }

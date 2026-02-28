@@ -1,5 +1,5 @@
 /**
- * Abandoned holds tracker — stubbed (DynamoDB removed).
+ * Abandoned holds tracker — stubbed (database removed).
  * Holds already have expires_at in PostgreSQL; cleanup is a simple SQL query.
  */
 

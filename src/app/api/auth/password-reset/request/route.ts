@@ -1,14 +1,15 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createId } from '@paralleldrive/cuid2';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { eq } from 'drizzle-orm';
 
 import { getDb } from '@/lib/db';
 import { getClientIp, rateLimit } from '@/lib/http/rate-limit';
 import { checkCsrf } from '@/lib/http/csrf';
 import { sendEmail } from '@/lib/email/ses';
-import { nowIso, oneHourFromNow, sha256Hex, ttlFromDate } from '@/lib/auth/password-reset';
+import { nowIso, oneHourFromNow, sha256Hex } from '@/lib/auth/password-reset';
+import { getPostgresClient } from '@/lib/db/postgres/client';
+import { passwordResets } from '@/lib/db/postgres/schema';
 
 const schema = z.object({
   email: z.string().email(),
@@ -22,12 +23,6 @@ function env(name: string) {
 
 function getBaseUrl() {
   return env('BF_PUBLIC_BASE_URL').replace(/\/$/, '');
-}
-
-function getDdb() {
-  const region = process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-east-1';
-  const client = new DynamoDBClient({ region });
-  return DynamoDBDocumentClient.from(client);
 }
 
 export async function POST(req: Request) {
@@ -53,31 +48,20 @@ export async function POST(req: Request) {
 
   const token = `pw_${createId()}_${createId()}`;
   const tokenHash = sha256Hex(token);
-
   const expires = oneHourFromNow();
-  const expiresAt = expires.toISOString();
 
-  // Store a reset record in Dynamo (separate table), TTL auto-cleanup.
-  const table = env('BF_DDB_PASSWORD_RESETS_TABLE');
-  const ddb = getDdb();
   try {
-    await ddb.send(
-      new PutCommand({
-        TableName: table,
-        Item: {
-          pk: 'PWRESET',
-          sk: tokenHash,
-          ttl: ttlFromDate(expires),
-          data: {
-            tokenHash,
-            userId: user.userId,
-            email,
-            createdAt: nowIso(),
-            expiresAt,
-          },
-        },
-      })
-    );
+    const pg = getPostgresClient();
+    await pg.insert(passwordResets).values({
+      tokenHash,
+      userId: user.userId,
+      email,
+      expiresAt: expires.toISOString(),
+      createdAt: nowIso(),
+    }).onConflictDoUpdate({
+      target: passwordResets.tokenHash,
+      set: { userId: user.userId, email, expiresAt: expires.toISOString(), createdAt: nowIso() },
+    });
   } catch (err) {
     console.error('[password-reset] Store failed:', err);
     return NextResponse.json({ ok: true }); // Don't leak errors

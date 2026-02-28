@@ -77,12 +77,12 @@ const CUSTOMER_ERRORS: Record<string, string> = {
 const ADMIN_ERRORS: Record<string, string> = {
   // Holds & bookings
   hold_expired: 'Hold TTL expired (default 30min). Customer needs to rebook. Check BF_HOLD_TTL_MINUTES env var.',
-  hold_not_found: 'Hold not found in DynamoDB. May be expired, deleted, or invalid holdId.',
+  hold_not_found: 'Hold not found in database. May be expired, deleted, or invalid holdId.',
   hold_not_active: 'Hold status is not "active". Check hold.status (confirmed/expired/cancelled).',
-  slot_unavailable: 'DynamoDB transaction rolled back due to slot conflict (another hold/booking).',
+  slot_unavailable: 'database transaction rolled back due to slot conflict (another hold/booking).',
   slot_capacity_exceeded: 'Public booking capacity exceeded room.maxPlayers. Adjust maxPlayers or time slots.',
   capacity_exceeded: 'Public booking capacity exceeded room.maxPlayers. Adjust maxPlayers or time slots.',
-  booking_not_found: 'Booking not found in DynamoDB. Invalid bookingId or booking may have been deleted.',
+  booking_not_found: 'Booking not found in database. Invalid bookingId or booking may have been deleted.',
   booking_type_not_allowed: 'Game.allowPrivate or game.allowPublic is false. Check game configuration.',
   fallback_booking_failed: 'Stripe webhook received payment but hold not found - fallback booking creation failed. Manual intervention required.',
   
@@ -113,10 +113,10 @@ const ADMIN_ERRORS: Record<string, string> = {
   missing_signature: 'Stripe webhook missing stripe-signature header. Check webhook configuration.',
   
   // Resources not found
-  game_not_found: 'Game not found in DynamoDB for given orgId+gameId. Check database.',
-  room_not_found: 'Room not found in DynamoDB. May have been deleted or invalid roomId.',
+  game_not_found: 'Game not found in database for given orgId+gameId. Check database.',
+  room_not_found: 'Room not found in database. May have been deleted or invalid roomId.',
   schedule_not_found: 'No schedule found for game. Create schedule in dashboard first.',
-  org_not_found: 'Org not found in DynamoDB. Invalid orgId or org deleted.',
+  org_not_found: 'Org not found in database. Invalid orgId or org deleted.',
   
   // Promotions
   promo_not_found: 'Promo code not found in org.promotions. Check promo code spelling.',

@@ -5,7 +5,7 @@ import { getDb } from '@/lib/db';
 
 /**
  * Validate the dashboard session by reading the cookie directly and looking up
- * the session in DynamoDB. No HTTP self-call needed.
+ * the session in database. No HTTP self-call needed.
  */
 export async function requireDashboardSession(opts?: { nextPath?: string }): Promise<{ orgId: string; userId: string }> {
   const h = await headers();

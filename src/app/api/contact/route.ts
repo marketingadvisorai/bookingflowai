@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod/v4';
 import { sendEmail } from '@/lib/email/ses';
-import { createDynamoDocClient } from '@/lib/db/dynamo/client';
-import { PutCommand } from '@aws-sdk/lib-dynamodb';
 
 /* ─── Schema ─── */
 const ContactSchema = z.object({
@@ -25,26 +23,6 @@ function isRateLimited(ip: string): boolean {
   }
   entry.count++;
   return entry.count > 10;
-}
-
-/* ─── Store lead in DynamoDB ─── */
-async function storeLead(data: z.infer<typeof ContactSchema>) {
-  const ddb = createDynamoDocClient();
-  const table = process.env.BF_DDB_LEADS_TABLE || 'bf_leads';
-  const id = `lead_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-
-  await ddb.send(
-    new PutCommand({
-      TableName: table,
-      Item: {
-        pk: 'LEADS',
-        sk: id,
-        ...data,
-        createdAt: new Date().toISOString(),
-        source: 'landing_page',
-      },
-    }),
-  );
 }
 
 /* ─── Build email ─── */
@@ -104,26 +82,13 @@ export async function POST(req: NextRequest) {
     const data = parsed.data;
     const { text, html } = buildEmail(data);
 
-    const results = await Promise.allSettled([
-      sendEmail({
-        from: 'noreply@bookingflowai.com',
-        to: 'tariqul.advisorppc@gmail.com',
-        subject: `New BookingFlow Lead: ${data.name}${data.business ? ` from ${data.business}` : ''}`,
-        text,
-        html,
-      }),
-      storeLead(data),
-    ]);
-
-    const emailResult = results[0];
-    if (emailResult.status === 'rejected') {
-      console.error('[contact] Email failed:', emailResult.reason);
-      return NextResponse.json({ error: 'Failed to send message. Please try again.' }, { status: 500 });
-    }
-
-    if (results[1].status === 'rejected') {
-      console.error('[contact] DynamoDB lead store failed:', (results[1] as PromiseRejectedResult).reason);
-    }
+    await sendEmail({
+      from: 'noreply@bookingflowai.com',
+      to: 'tariqul.advisorppc@gmail.com',
+      subject: `New BookingFlow Lead: ${data.name}${data.business ? ` from ${data.business}` : ''}`,
+      text,
+      html,
+    });
 
     return NextResponse.json({ ok: true });
   } catch (err) {

@@ -104,7 +104,7 @@ export default function PrivacyPage() {
               </p>
               <ul className="list-disc pl-6 space-y-2 text-[15px] text-[#574E4C]">
                 <li><strong>Stripe:</strong> Payment processing (see <Link href="https://stripe.com/privacy" className="text-[#FF4F00] underline hover:no-underline">Stripe's Privacy Policy</Link>)</li>
-                <li><strong>AWS:</strong> Infrastructure and hosting (DynamoDB, SES, CloudFront)</li>
+                <li><strong>AWS:</strong> Infrastructure and hosting (PostgreSQL, SES, CloudFront)</li>
                 <li><strong>Analytics providers:</strong> Anonymous usage analytics</li>
               </ul>
 

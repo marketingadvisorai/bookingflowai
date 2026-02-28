@@ -21,6 +21,15 @@ export function createDrizzle() {
   return drizzle(getPool(), { schema });
 }
 
+let drizzleInstance: DrizzleDb | null = null;
+
+export function getPostgresClient(): DrizzleDb {
+  if (!drizzleInstance) {
+    drizzleInstance = createDrizzle();
+  }
+  return drizzleInstance;
+}
+
 export async function closePool() {
   if (pool) {
     await pool.end();

@@ -37,7 +37,7 @@ export async function putFile(uploadUrl: string, file: File) {
   if (!res.ok) throw new Error('upload_failed');
 }
 
-/** Base64 fallback upload: stores image directly in DynamoDB */
+/** Base64 fallback upload: stores image directly in database */
 export async function uploadBase64(input: {
   orgId: string;
   gameId: string;

@@ -1,5 +1,5 @@
 /**
- * Waiver store — stubbed (DynamoDB removed).
+ * Waiver store — stubbed (database removed).
  * Digital waivers are a Business+ feature not yet in active use.
  * Will be migrated to PostgreSQL when the feature is built out.
  */

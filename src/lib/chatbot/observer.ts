@@ -1,5 +1,5 @@
 /**
- * AI Observation Logger — PostgreSQL stub (DynamoDB removed)
+ * AI Observation Logger — PostgreSQL stub (database removed)
  * Currently no-ops all persistence. Detection helpers still work.
  */
 

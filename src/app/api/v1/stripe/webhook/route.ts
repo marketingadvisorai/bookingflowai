@@ -153,7 +153,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ ok: true, received: true, type: event.type, ignored: 'missing_org' });
       }
       if (!hold) {
-        // FALLBACK: Hold expired/deleted by DynamoDB TTL but payment succeeded.
+        // FALLBACK: Hold expired or deleted but payment succeeded.
         // Create booking directly from Stripe session metadata.
         console.error(`[stripe/webhook] Hold not found but payment succeeded — creating booking from metadata. orgId=${orgId}, holdId=${holdId}, sessionId=${sessionId}`);
         const gameId = md.gameId;

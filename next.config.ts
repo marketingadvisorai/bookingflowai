@@ -39,6 +39,22 @@ const nextConfig: NextConfig = {
       ],
     },
     {
+      source: '/gift-cards/:path*',
+      headers: [
+        ...securityHeaders,
+        { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+        { key: 'Content-Security-Policy', value: "frame-ancestors 'self' *" },
+      ],
+    },
+    {
+      source: '/standalone/:path*',
+      headers: [
+        ...securityHeaders,
+        { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+        { key: 'Content-Security-Policy', value: "frame-ancestors 'self' *" },
+      ],
+    },
+    {
       // All other paths — deny framing
       source: '/(.*)',
       headers: [
