@@ -150,7 +150,7 @@ export function ClassicLayout({ orgId = 'org_demo', gameId = 'game_axe', theme =
                 )}
                 {error && !holdId && (
                   <div className="rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 px-4 py-3 text-sm text-red-700 dark:text-red-400 animate-in fade-in slide-in-from-top-2 duration-300" role="alert" aria-live="polite">
-                    <div className="flex items-start gap-3"><span className="text-lg flex-shrink-0">⚠️</span><div><div className="font-semibold">Oops!</div><div className="text-xs mt-0.5 opacity-90">{error}</div></div></div>
+                    <div className="flex items-start gap-3"><span className="text-lg flex-shrink-0">⚠️</span><div><div className="font-semibold">Oops!</div><div className="text-xs mt-0.5 opacity-90">{typeof error === 'string' ? error : String(error ?? '')}</div></div></div>
                   </div>
                 )}
               </div>
@@ -233,7 +233,7 @@ export function ClassicLayout({ orgId = 'org_demo', gameId = 'game_axe', theme =
                   <ConfirmBar holdId={holdId} loading={loading || checkoutLoading} onConfirm={() => payAndConfirm()} />
                   {error && (
                     <div className="mt-3 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 px-4 py-3 text-sm text-red-700 dark:text-red-400 animate-in fade-in duration-300">
-                      <div className="flex items-start gap-2"><span className="text-base">⚠️</span><span className="text-xs">{error}</span></div>
+                      <div className="flex items-start gap-2"><span className="text-base">⚠️</span><span className="text-xs">{typeof error === 'string' ? error : String(error ?? '')}</span></div>
                     </div>
                   )}
                 </div>

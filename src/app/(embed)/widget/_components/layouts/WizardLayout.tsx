@@ -318,9 +318,11 @@ function HoldExpiredBanner() {
 }
 
 function ErrorBanner({ error }: { error: string }) {
+  // Defensive: ensure error is always rendered as a string (prevents React #310)
+  const msg = typeof error === 'string' ? error : String(error ?? '');
   return (
     <div className="mt-3 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 px-4 py-3 text-sm text-red-700 dark:text-red-400 animate-in fade-in slide-in-from-top-2 duration-300" role="alert" aria-live="polite">
-      <div className="flex items-start gap-3"><span className="text-lg flex-shrink-0">⚠️</span><div><div className="font-semibold">Oops!</div><div className="text-xs mt-0.5 opacity-90">{error}</div></div></div>
+      <div className="flex items-start gap-3"><span className="text-lg flex-shrink-0">⚠️</span><div><div className="font-semibold">Oops!</div><div className="text-xs mt-0.5 opacity-90">{msg}</div></div></div>
     </div>
   );
 }

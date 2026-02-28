@@ -26,6 +26,19 @@ export function safeSessionSet(key: string, val: string) {
   try { sessionStorage.setItem(key, val); } catch { /* cross-origin iframe */ }
 }
 
+/** Ensure a value is a string — prevents React #310 "Objects are not valid as React children". */
+export function safeString(val: unknown): string {
+  if (val == null) return '';
+  if (typeof val === 'string') return val;
+  if (typeof val === 'number' || typeof val === 'boolean') return String(val);
+  // Object/Array/Error — extract message if possible
+  if (val instanceof Error) return val.message;
+  if (typeof val === 'object' && val !== null && 'message' in val && typeof (val as { message?: unknown }).message === 'string') {
+    return (val as { message: string }).message;
+  }
+  try { return JSON.stringify(val); } catch { return 'Something went wrong.'; }
+}
+
 /* ── Slot normalization ── */
 export function normalizeSlots(rawSlots: unknown[]): Slot[] {
   return rawSlots
@@ -114,6 +127,9 @@ export async function fetchAvailability(params: {
     cache.set(cacheKey, { ts: nowMs, slots: normalized });
     onError('');
     emitBFEvent('availability_loaded', { orgId, gameId, date, type, players, slotsCount: normalized.length });
+  } catch (err) {
+    // Catch-all: network errors, JSON parse failures, etc.
+    onError(friendlyError(err instanceof Error ? err.message : 'server_error'));
   } finally {
     onLoading(false);
   }
@@ -130,48 +146,54 @@ export async function fetchCreateHold(params: {
   const { orgId, gameId, slot, type, players, name, phone, email, trackPricing, onHold, onPricing, onError } = params;
   emitBFEvent('slot_selected', { orgId, gameId, startAt: slot.startAt, endAt: slot.endAt, roomId: slot.roomId });
 
-  const res = await fetchT('/api/v1/holds', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({
-      orgId, gameId, roomId: slot.roomId, bookingType: type,
-      startAt: slot.startAt, endAt: slot.endAt, players,
-      customer: {
-        ...(name.trim() ? { name: name.trim() } : {}),
-        ...(phone.trim() ? { phone: phone.trim() } : {}),
-        ...(email.trim() ? { email: email.trim() } : {}),
-      },
-    }),
-  });
-  const body = (await res.json().catch(() => null)) as unknown;
-  if (!res.ok) {
-    const err = typeof body === 'object' && body && 'error' in body
-      ? String((body as { error?: unknown }).error) : null;
-    onError(friendlyError(err ?? 'Failed to reserve this time'));
-    emitBFEvent('hold_error', { orgId, gameId, error: err ?? 'failed' });
+  try {
+    const res = await fetchT('/api/v1/holds', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        orgId, gameId, roomId: slot.roomId, bookingType: type,
+        startAt: slot.startAt, endAt: slot.endAt, players,
+        customer: {
+          ...(name.trim() ? { name: name.trim() } : {}),
+          ...(phone.trim() ? { phone: phone.trim() } : {}),
+          ...(email.trim() ? { email: email.trim() } : {}),
+        },
+      }),
+    });
+    const body = (await res.json().catch(() => null)) as unknown;
+    if (!res.ok) {
+      const err = typeof body === 'object' && body && 'error' in body
+        ? String((body as { error?: unknown }).error) : null;
+      onError(friendlyError(err ?? 'Failed to reserve this time'));
+      emitBFEvent('hold_error', { orgId, gameId, error: err ?? 'failed' });
+      return null;
+    }
+
+    const hold = typeof body === 'object' && body && 'hold' in body ? (body as { hold?: unknown }).hold : undefined;
+    const hObj = hold as Record<string, unknown> | undefined;
+    const holdId = hObj && typeof hObj.holdId === 'string' ? hObj.holdId : null;
+    const expiresAt = hObj && typeof hObj.expiresAt === 'string' ? hObj.expiresAt : null;
+
+    if (trackPricing && hObj) {
+      onPricing({
+        currency: typeof hObj.currency === 'string' ? hObj.currency : 'USD',
+        subtotalCents: typeof hObj.subtotalCents === 'number' ? hObj.subtotalCents : 0,
+        processingFeeCents: typeof hObj.processingFeeCents === 'number' ? hObj.processingFeeCents : 0,
+        totalCents: typeof hObj.totalCents === 'number' ? hObj.totalCents : 0,
+        processingFeeLabel: typeof hObj.processingFeeLabel === 'string' ? hObj.processingFeeLabel : undefined,
+      });
+    }
+
+    if (holdId) {
+      onHold(holdId, expiresAt);
+      emitBFEvent('hold_created', { orgId, gameId, holdId, expiresAt });
+    }
+    return holdId;
+  } catch (err) {
+    // Catch-all: network errors, timeouts, JSON parse failures
+    onError(friendlyError(err instanceof Error ? err.message : 'server_error'));
     return null;
   }
-
-  const hold = typeof body === 'object' && body && 'hold' in body ? (body as { hold?: unknown }).hold : undefined;
-  const hObj = hold as Record<string, unknown> | undefined;
-  const holdId = hObj && typeof hObj.holdId === 'string' ? hObj.holdId : null;
-  const expiresAt = hObj && typeof hObj.expiresAt === 'string' ? hObj.expiresAt : null;
-
-  if (trackPricing && hObj) {
-    onPricing({
-      currency: typeof hObj.currency === 'string' ? hObj.currency : 'USD',
-      subtotalCents: typeof hObj.subtotalCents === 'number' ? hObj.subtotalCents : 0,
-      processingFeeCents: typeof hObj.processingFeeCents === 'number' ? hObj.processingFeeCents : 0,
-      totalCents: typeof hObj.totalCents === 'number' ? hObj.totalCents : 0,
-      processingFeeLabel: typeof hObj.processingFeeLabel === 'string' ? hObj.processingFeeLabel : undefined,
-    });
-  }
-
-  if (holdId) {
-    onHold(holdId, expiresAt);
-    emitBFEvent('hold_created', { orgId, gameId, holdId, expiresAt });
-  }
-  return holdId;
 }
 
 /* ── Validate & apply promo ── */
@@ -183,28 +205,33 @@ export async function fetchValidatePromo(params: {
   const { orgId, code, holdId, trackPricing, onStatus, onPricingUpdate } = params;
   if (!code.trim()) { onStatus('idle', ''); return; }
   onStatus('checking', 'Checking…');
-  const res = await validatePromoCode({ orgId, code: code.trim() });
-  onStatus(res.status, res.message);
 
-  if (res.status === 'valid' && holdId && trackPricing) {
-    try {
-      const applyRes = await fetchT('/api/v1/holds/apply-promo', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ orgId, holdId, code: code.trim() }),
-      }, 5000);
-      if (applyRes.ok) {
-        const ab = (await applyRes.json().catch(() => null)) as Record<string, unknown> | null;
-        if (ab && 'totalCents' in ab) {
-          onPricingUpdate(prev => prev ? {
-            ...prev,
-            discountedSubtotalCents: typeof ab.discountedSubtotalCents === 'number' ? ab.discountedSubtotalCents : prev.subtotalCents,
-            promoDiscountCents: typeof ab.discountCents === 'number' ? ab.discountCents : undefined,
-            processingFeeCents: typeof ab.processingFeeCents === 'number' ? ab.processingFeeCents : prev.processingFeeCents,
-            totalCents: typeof ab.totalCents === 'number' ? ab.totalCents : prev.totalCents,
-          } : prev);
+  try {
+    const res = await validatePromoCode({ orgId, code: code.trim() });
+    onStatus(res.status, safeString(res.message));
+
+    if (res.status === 'valid' && holdId && trackPricing) {
+      try {
+        const applyRes = await fetchT('/api/v1/holds/apply-promo', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ orgId, holdId, code: code.trim() }),
+        }, 5000);
+        if (applyRes.ok) {
+          const ab = (await applyRes.json().catch(() => null)) as Record<string, unknown> | null;
+          if (ab && 'totalCents' in ab) {
+            onPricingUpdate(prev => prev ? {
+              ...prev,
+              discountedSubtotalCents: typeof ab.discountedSubtotalCents === 'number' ? ab.discountedSubtotalCents : prev.subtotalCents,
+              promoDiscountCents: typeof ab.discountCents === 'number' ? ab.discountCents : undefined,
+              processingFeeCents: typeof ab.processingFeeCents === 'number' ? ab.processingFeeCents : prev.processingFeeCents,
+              totalCents: typeof ab.totalCents === 'number' ? ab.totalCents : prev.totalCents,
+            } : prev);
+          }
         }
-      }
-    } catch { /* ignore */ }
+      } catch { /* ignore apply error — validation result already shown */ }
+    }
+  } catch {
+    onStatus('invalid', 'Could not validate promo code. Please try again.');
   }
 }

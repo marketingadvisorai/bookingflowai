@@ -127,7 +127,7 @@ export function BookingWidgetDemo({ orgId = 'org_demo', gameId: gameIdProp, them
                   Hold active: <span className="font-semibold text-gray-900 dark:text-[#fafaf9]">{countdown}</span>
                 </div>
               )}
-              {error && <p className="text-sm text-red-500 dark:text-red-400 px-1" role="status" aria-live="polite">{error}</p>}
+              {error && <p className="text-sm text-red-500 dark:text-red-400 px-1" role="status" aria-live="polite">{typeof error === 'string' ? error : String(error)}</p>}
             </div>
 
             {/* Slots */}
@@ -192,7 +192,7 @@ export function BookingWidgetDemo({ orgId = 'org_demo', gameId: gameIdProp, them
                 {!stripeClientSecret && (
                   <div className="mt-4">
                     <ConfirmBar holdId={holdId} loading={loading || checkoutLoading} onConfirm={() => payAndConfirm({ giftCardCode, giftCardBalance, onStripeSecret: setStripeClientSecret })} />
-                    {error && <p className="mt-2 text-sm text-red-500 dark:text-red-400 px-1">{error}</p>}
+                    {error && <p className="mt-2 text-sm text-red-500 dark:text-red-400 px-1">{typeof error === 'string' ? error : String(error)}</p>}
                   </div>
                 )}
 
@@ -200,10 +200,14 @@ export function BookingWidgetDemo({ orgId = 'org_demo', gameId: gameIdProp, them
                   <EmbeddedCheckout
                     clientSecret={stripeClientSecret}
                     onComplete={async () => {
-                      setStripeClientSecret(null);
-                      resetBooking();
-                      setGiftCardCode('');
-                      setGiftCardBalance(0);
+                      // Payment succeeded in embedded checkout — trigger the existing
+                      // stripe redirect polling by adding URL params and reloading.
+                      // The useBookingEngine hook has a useEffect that detects stripe=success
+                      // and polls /api/v1/bookings/:id until confirmed.
+                      const url = new URL(window.location.href);
+                      url.searchParams.set('stripe', 'success');
+                      url.searchParams.set('holdId', holdId ?? '');
+                      window.location.href = url.toString();
                     }}
                   />
                 )}
