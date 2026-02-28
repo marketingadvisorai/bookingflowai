@@ -174,11 +174,10 @@ export async function POST(req: Request) {
   try {
     session = await stripe.checkout.sessions.create({
     mode: 'payment',
-    ui_mode: 'embedded',
-    redirect_on_completion: 'if_required',
     // MVP: keep payment methods synchronous to avoid long-running async payments outliving our short hold TTL.
     payment_method_types: ['card'],
-    return_url: returnUrlFinal,
+    success_url: returnUrlFinal,
+    cancel_url: returnBase.toString().replace('stripe=success', 'stripe=cancel'),
     client_reference_id: holdId,
     payment_intent_data: {
       transfer_data: { destination: org.stripeAccountId },
@@ -268,5 +267,5 @@ export async function POST(req: Request) {
     );
   }
 
-  return NextResponse.json({ ok: true, clientSecret: session.client_secret, id: session.id }, { status: 200, headers });
+  return NextResponse.json({ ok: true, url: session.url, id: session.id }, { status: 200, headers });
 }
