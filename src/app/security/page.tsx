@@ -57,12 +57,12 @@ const complianceItems = [
 const dataProtectionPoints = [
   'All customer booking data is encrypted at rest using AES-256',
   'Data in transit uses TLS 1.3 with perfect forward secrecy',
-  'Credit card data is tokenized by Stripe — we never see the full card number',
+  'Credit card data is tokenized by Stripe. We never see the full card number',
   'Payment processing happens directly between your customer and Stripe',
   'Access logs are retained for 90 days for audit purposes',
   'Database backups are encrypted and stored in geographically separate regions',
   'Multi-factor authentication available for all dashboard users',
-  'Role-based access control — staff only see what they need to see',
+  'Role-based access control. Staff only see what they need to see',
 ];
 
 export default function SecurityPage() {

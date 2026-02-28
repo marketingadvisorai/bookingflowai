@@ -90,7 +90,7 @@ export function AmountStep({ amountCents, venueName, onChange, onNext }: Props) 
           onClick={onNext}
           className="mt-5 h-12 w-full rounded-xl bg-[#FF4F00] text-sm font-semibold text-white transition-all duration-200 hover:bg-[#E64600] disabled:opacity-40"
         >
-          Continue — {fmt(amountCents)}
+          Continue: {fmt(amountCents)}
         </button>
       </div>
     </div>

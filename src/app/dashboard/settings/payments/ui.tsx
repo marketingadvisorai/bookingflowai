@@ -129,7 +129,7 @@ export function PaymentsSettings({ orgId }: { orgId: string }) {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Stripe account:</span>
-              <span className="font-medium break-all text-right">{status?.stripeAccountId ?? '—'}</span>
+              <span className="font-medium break-all text-right">{status?.stripeAccountId ?? ' - '}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Charges enabled:</span>

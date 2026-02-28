@@ -4,7 +4,7 @@ import { MarketingNav } from '@/app/_components/marketing-nav';
 import { MarketingFooter } from '@/app/_components/marketing-footer';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy — BookingFlow',
+  title: 'Privacy Policy | BookingFlow',
   description: 'How BookingFlow collects, uses, and protects your data. Clear, honest privacy practices for venue owners and their customers.',
 };
 

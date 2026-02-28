@@ -4,7 +4,7 @@ import { MarketingNav } from '@/app/_components/marketing-nav';
 import { MarketingFooter } from '@/app/_components/marketing-footer';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service — BookingFlow',
+  title: 'Terms of Service | BookingFlow',
   description: 'Terms and conditions for using BookingFlow\'s online booking platform for entertainment venues.',
 };
 

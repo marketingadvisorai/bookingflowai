@@ -4,7 +4,7 @@ import { MarketingNav } from '@/app/_components/marketing-nav';
 import { MarketingFooter } from '@/app/_components/marketing-footer';
 
 export const metadata: Metadata = {
-  title: 'Acceptable Use Policy — BookingFlow',
+  title: 'Acceptable Use Policy | BookingFlow',
   description: 'Guidelines for acceptable use of the BookingFlow platform. Learn what\'s permitted and what\'s prohibited.',
 };
 

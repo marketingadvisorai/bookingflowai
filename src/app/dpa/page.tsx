@@ -4,7 +4,7 @@ import { MarketingNav } from '@/app/_components/marketing-nav';
 import { MarketingFooter } from '@/app/_components/marketing-footer';
 
 export const metadata: Metadata = {
-  title: 'Data Processing Agreement — BookingFlow',
+  title: 'Data Processing Agreement | BookingFlow',
   description: 'GDPR-compliant Data Processing Agreement for BookingFlow customers. Understand how we process your customer data.',
 };
 

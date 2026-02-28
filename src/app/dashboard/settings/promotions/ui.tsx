@@ -130,7 +130,7 @@ export function PromotionsSettings({ orgId }: { orgId: string }) {
                 placeholder="SAVE10"
                 className="rounded-lg focus:ring-[#FF4F00]/20 focus:border-[#FF4F00]"
               />
-              <p className="text-xs text-muted-foreground">Normalized: {normalizedCode || '—'}</p>
+              <p className="text-xs text-muted-foreground">Normalized: {normalizedCode || ' - '}</p>
             </div>
 
             {/* Type Toggle */}

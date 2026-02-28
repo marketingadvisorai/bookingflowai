@@ -153,7 +153,7 @@ function Steps() {
                     <h2 className="text-[22px] sm:text-[26px] lg:text-[32px] font-semibold text-[#201515] leading-[1.1]">
                       {step.title}
                     </h2>
-                    <span className="text-[14px] text-[#93908C] font-medium">— {step.subtitle}</span>
+                    <span className="text-[14px] text-[#93908C] font-medium">{step.subtitle}</span>
                   </div>
                   <p className="text-[16px] sm:text-[17px] text-[#574E4C] leading-[1.7] mb-5">
                     {step.description}
