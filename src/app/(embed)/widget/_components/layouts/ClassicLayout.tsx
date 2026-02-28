@@ -428,17 +428,23 @@ export function ClassicLayout({
         } catch { /* ignore */ }
       }
 
+      const customerData = {
+        ...(name.trim() ? { name: name.trim() } : {}),
+        ...(phone.trim() ? { phone: phone.trim() } : {}),
+        ...(email.trim() ? { email: email.trim() } : {}),
+      };
+
       async function confirmWithoutPayment() {
         const cRes = await fetch('/api/v1/bookings/confirm', {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ orgId, holdId, promoCode: promoCode.trim() || undefined }),
+          body: JSON.stringify({ orgId, holdId, promoCode: promoCode.trim() || undefined, customer: Object.keys(customerData).length > 0 ? customerData : undefined }),
         });
         const cBody = (await cRes.json().catch(() => null)) as unknown;
         if (!cRes.ok) {
           const cErr =
             typeof cBody === 'object' && cBody && 'error' in cBody ? String((cBody as { error?: unknown }).error) : null;
-          setError(cErr ?? 'Failed to confirm booking');
+          setError(friendlyError(cErr ?? 'confirm_failed'));
           emitBFEvent('booking_error', { orgId, gameId, holdId, error: cErr ?? 'confirm_failed' });
           return false;
         }
@@ -478,7 +484,7 @@ export function ClassicLayout({
       if (res.ok) {
         stripeAvailableRef.current = true;
         const url = typeof body === 'object' && body && 'url' in body ? String((body as { url?: unknown }).url) : '';
-        if (!url) { setError('Missing checkout URL'); return; }
+        if (!url) { setError(friendlyError('missing_checkout_url')); return; }
         emitBFEvent('checkout_started', { orgId, gameId, holdId });
         window.location.href = url;
         return;
@@ -491,7 +497,7 @@ export function ClassicLayout({
         return;
       }
 
-      setError(err ?? 'Failed to start checkout');
+      setError(friendlyError(err));
       emitBFEvent('booking_error', { orgId, gameId, holdId, error: err ?? 'failed' });
     } finally {
       setLoading(false);

@@ -110,8 +110,6 @@ export function IdleHelper({ idleSeconds, stage, onOpenChat }: IdleHelperProps) 
     setDismissed(false);
   }, [stage]);
 
-  if (dismissed) return null;
-
   const getMessage = () => {
     if (stage === 'time_selection' && idleSeconds >= 30) {
       return { text: 'Need help picking a time? 💬', clickable: !!onOpenChat };
@@ -126,7 +124,15 @@ export function IdleHelper({ idleSeconds, stage, onOpenChat }: IdleHelperProps) 
   };
 
   const msg = getMessage();
-  if (!msg) return null;
+
+  // Auto-dismiss after 8 seconds (hook must be called unconditionally)
+  useEffect(() => {
+    if (!msg) return;
+    const timer = setTimeout(() => setDismissed(true), 8000);
+    return () => clearTimeout(timer);
+  }, [stage, idleSeconds, msg]);
+
+  if (dismissed || !msg) return null;
 
   const handleClick = () => {
     if (msg.clickable && onOpenChat) {
@@ -134,11 +140,6 @@ export function IdleHelper({ idleSeconds, stage, onOpenChat }: IdleHelperProps) 
     }
     setDismissed(true);
   };
-
-  useEffect(() => {
-    const timer = setTimeout(() => setDismissed(true), 8000);
-    return () => clearTimeout(timer);
-  }, [stage, idleSeconds]);
 
   return (
     <div className="fixed bottom-4 left-4 right-4 flex justify-center z-50 animate-in fade-in slide-in-from-bottom-2 duration-300">

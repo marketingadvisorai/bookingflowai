@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: 'invalid_request' }, { status: 400, headers });
   }
 
-  const { orgId, holdId, promoCode } = parsed.data;
+  const { orgId, holdId, promoCode, customer: customerOverride } = parsed.data;
   
   // Validate orgId format to prevent injection attacks
   if (!orgId || typeof orgId !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(orgId)) {
@@ -102,6 +102,21 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: 'hold_not_active', message: 'Your hold has expired. Please start a new booking.', status: hold.status }, { status: 409, headers });
   }
 
+  // Merge customer data: prefer override from request body (filled after hold creation)
+  const mergedCustomer = {
+    ...hold.customer,
+    ...(customerOverride?.name ? { name: customerOverride.name.trim().slice(0, 100) } : {}),
+    ...(customerOverride?.email ? { email: customerOverride.email.trim().toLowerCase().slice(0, 255) } : {}),
+    ...(customerOverride?.phone ? { phone: customerOverride.phone.trim().slice(0, 50) } : {}),
+    ...(customerOverride?.firstName ? { firstName: customerOverride.firstName.trim().slice(0, 100) } : {}),
+    ...(customerOverride?.lastName ? { lastName: customerOverride.lastName.trim().slice(0, 100) } : {}),
+  };
+
+  // Also update the hold's customer so webhook-created bookings get the data
+  if (customerOverride && Object.keys(customerOverride).length > 0) {
+    hold.customer = mergedCustomer;
+  }
+
   const bookingId = bookingIdFromHold(hold.holdId);
   const booking = {
     orgId,
@@ -115,7 +130,7 @@ export async function POST(req: Request) {
     players: hold.players,
     status: 'confirmed' as const,
     createdAt: nowIso(),
-    customer: hold.customer,
+    customer: mergedCustomer,
 
     // Pricing snapshot from hold
     currency: hold.currency,

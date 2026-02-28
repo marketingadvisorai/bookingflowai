@@ -469,11 +469,17 @@ export function BookingWidgetDemo({
         }
       }
 
+      const customerData = {
+        ...(name.trim() ? { name: name.trim() } : {}),
+        ...(phone.trim() ? { phone: phone.trim() } : {}),
+        ...(email.trim() ? { email: email.trim() } : {}),
+      };
+
       async function confirmWithoutPayment() {
         const cRes = await fetchWithTimeout('/api/v1/bookings/confirm', {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ orgId, holdId, promoCode: promoCode.trim() || undefined }),
+          body: JSON.stringify({ orgId, holdId, promoCode: promoCode.trim() || undefined, customer: Object.keys(customerData).length > 0 ? customerData : undefined }),
         }, 12000);
         const cBody = (await cRes.json().catch(() => null)) as unknown;
         if (!cRes.ok) {
@@ -541,6 +547,7 @@ export function BookingWidgetDemo({
             holdId,
             returnUrl: window.location.href,
             ...(gcAppliedCents > 0 ? { giftCardCode, giftCardAmountCents: gcAppliedCents } : {}),
+            customer: Object.keys(customerData).length > 0 ? customerData : undefined,
           }),
         }, 15000);
       } catch {
@@ -591,6 +598,24 @@ export function BookingWidgetDemo({
   }, [remainingMs]);
 
   const r = radius ? `${Math.max(8, Math.min(40, Number(radius) || 28))}px` : '28px';
+
+  // Restore confirmation state from URL (survives Stripe iframe teardown / page reload)
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get('bf_confirmed') === '1') {
+      const bid = url.searchParams.get('bf_bookingId') ?? null;
+      setConfirmed(true);
+      setConfirmedBookingId(bid);
+      setHoldId(null);
+      setHoldExpiresAt(null);
+      setHoldPricing(null);
+      setStripeClientSecret(null);
+      // Clean URL
+      url.searchParams.delete('bf_confirmed');
+      url.searchParams.delete('bf_bookingId');
+      window.history.replaceState({}, '', url.toString());
+    }
+  }, []);
 
   // After Stripe redirect, poll for booking creation (webhook-driven).
   useEffect(() => {
@@ -986,8 +1011,17 @@ export function BookingWidgetDemo({
                     // Best effort — gift card info is also in Stripe metadata for webhook fallback
                   }
                 }
-                setStripeClientSecret(null);
                 const bookingId = `booking_${holdId}`;
+
+                // Persist confirmation in URL so it survives Stripe iframe teardown / re-renders
+                try {
+                  const url = new URL(window.location.href);
+                  url.searchParams.set('bf_confirmed', '1');
+                  url.searchParams.set('bf_bookingId', bookingId);
+                  window.history.replaceState({}, '', url.toString());
+                } catch { /* ignore */ }
+
+                setStripeClientSecret(null);
                 setConfirmed(true);
                 setConfirmedBookingId(bookingId);
                 emitBFEvent('booking_confirmed', { orgId, gameId, bookingId, date, players });
