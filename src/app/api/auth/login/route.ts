@@ -10,6 +10,7 @@ import { checkCsrf } from '@/lib/http/csrf';
 const schema = z.object({
   email: z.string().email(),
   password: z.string().min(1).max(100),
+  rememberMe: z.boolean().optional().default(true),
 });
 
 function nowIso() {
@@ -59,7 +60,8 @@ export async function POST(req: Request) {
   await db.putUser(updatedUser);
 
   const sessionToken = `sess_${createId()}`;
-  const expiresAt = new Date(Date.now() + 30 * 60_000).toISOString();
+  const ttl = parsed.data.rememberMe ? 7 * 24 * 60 * 60_000 : 30 * 60_000;
+  const expiresAt = new Date(Date.now() + ttl).toISOString();
   await db.putSession({ sessionToken, userId: user.userId, orgId: user.orgId, createdAt: nowIso(), expiresAt });
 
   const res = NextResponse.json({ ok: true, user: { userId: user.userId, orgId: user.orgId, email: user.email, role: user.role } });

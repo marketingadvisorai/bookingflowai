@@ -10,6 +10,7 @@ export function LoginForm({ nextPath }: { nextPath: string }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,7 +22,7 @@ export function LoginForm({ nextPath }: { nextPath: string }) {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ email: email.trim().toLowerCase(), password: password.trim() }),
+        body: JSON.stringify({ email: email.trim().toLowerCase(), password: password.trim(), rememberMe }),
       });
       const body = (await res.json().catch(() => null)) as unknown;
       const apiError =
@@ -123,6 +124,16 @@ export function LoginForm({ nextPath }: { nextPath: string }) {
               </button>
             </div>
           </div>
+
+          <label className="flex items-center gap-2 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="h-4 w-4 rounded border-[#E7E5E4] text-[#FF4F00] accent-[#FF4F00] focus:ring-[#FF4F00]/20"
+            />
+            <span className="text-sm text-[#6F6765]">Keep me logged in</span>
+          </label>
 
           {error && (
             <div className="rounded-lg bg-red-50 px-4 py-3.5 text-sm text-red-600">

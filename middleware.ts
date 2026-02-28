@@ -58,7 +58,7 @@ export function middleware(req: NextRequest) {
       sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',
       path: '/',
-      maxAge: 30 * 60, // 30 minutes
+      maxAge: 7 * 24 * 60 * 60, // 7 days (DB is source of truth for actual expiry)
     });
     return redirectRes;
   }
@@ -79,7 +79,7 @@ export function middleware(req: NextRequest) {
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
     path: '/',
-    maxAge: 30 * 60, // 30 minutes
+    maxAge: 7 * 24 * 60 * 60, // 7 days (DB is source of truth for actual expiry)
   });
   return res;
 }
